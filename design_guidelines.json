@@ -1,0 +1,192 @@
+{
+  "brand": {
+    "name": "Lachen & Co.",
+    "tagline_tr": "Restoran Teknolojilerinde Yeni Nesil NFC & AI Ekosistemi",
+    "tagline_en": "Next-Gen NFC & AI Ecosystem for Modern Dining",
+    "logo": {
+      "wordmark": "LACHEN.CO.",
+      "has_nfc_arcs": true,
+      "arcs_color": "#FFFFFF",
+      "text_color": "#FFFFFF",
+      "bg_color": "#000000",
+      "description": "White wordmark 'LACHEN.CO.' followed by three concentric animated NFC radio-wave arcs attached to the trailing dot."
+    }
+  },
+  "design_philosophy": {
+    "archetype": "Swiss & High-Contrast Minimalist Dark (Awwwards-Caliber)",
+    "vibe": "Ultra-minimal, dark tech luxury, high contrast, cinematic, precision engineering",
+    "inspiration": "octopuseffect.com dark aesthetic with custom kinetic typography, crisp 1px borders, subtle glassmorphism and subtle glowing NFC wave indicators",
+    "no_fake_data_rule": "Strictly NO fake testimonials, NO fake company metrics, NO fake client counts or artificial press logos anywhere on the site."
+  },
+  "color_palette": {
+    "background_primary": "#050505",
+    "background_secondary": "#0D0D0F",
+    "background_card": "#121216",
+    "background_glass": "rgba(18, 18, 22, 0.75)",
+    "border_subtle": "rgba(255, 255, 255, 0.12)",
+    "border_highlight": "rgba(255, 255, 255, 0.35)",
+    "text_primary": "#FFFFFF",
+    "text_secondary": "#A1A1AA",
+    "text_muted": "#71717A",
+    "accent_glow": "#3B82F6",
+    "accent_nfc_pulse": "#60A5FA",
+    "demo_badge_bg": "rgba(234, 179, 8, 0.15)",
+    "demo_badge_text": "#FACC15",
+    "demo_badge_border": "rgba(234, 179, 8, 0.4)"
+  },
+  "typography": {
+    "heading_font": "Outfit, sans-serif",
+    "body_font": "Plus Jakarta Sans, sans-serif",
+    "mono_font": "JetBrains Mono, monospace",
+    "scales": {
+      "h1_hero": "text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08]",
+      "h2_section": "text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight",
+      "h3_card": "text-xl sm:text-2xl font-semibold tracking-normal",
+      "body": "text-base text-zinc-400 leading-relaxed font-normal",
+      "caption": "text-xs uppercase tracking-[0.2em] font-mono text-zinc-500"
+    }
+  },
+  "motion_system": {
+    "smooth_scroll": "Lenis smooth scroll integration for weighted scrolling feel",
+    "hero_reveal": "Framer Motion kinetic mask reveal on page load",
+    "card_hover": "Subtle -translate-y-1 scale-[1.01] transition with border-white/40 highlight",
+    "nfc_waves": "Animated pulse keyframes simulating contactless NFC signal emission",
+    "marquee": "Slow technical ticker in mono font showcasing service capabilities"
+  },
+  "sections": [
+    {
+      "id": "header",
+      "name": "Navigation Bar",
+      "components": [
+        "Language Toggle (TR / EN)",
+        "LACHEN.CO. Logo with animated NFC Arcs",
+        "Nav Links (Hizmetler / Services, Teknology / Technology, İletişim / Contact)",
+        "CTA Button: 'Bize Ulaşın' / 'Contact Us'"
+      ],
+      "styling": "Fixed top z-50 backdrop-blur-xl bg-[rgba(5,5,5,0.8)] border-b border-white/10"
+    },
+    {
+      "id": "hero",
+      "name": "Hero Section",
+      "headline_tr": "Restoranların Geleceğini Birlikte Tasarlıyoruz.",
+      "headline_en": "Architecting the Future of Restaurants.",
+      "subtext_tr": "NFC ve Yapay Zeka destekli temassız menü, akıllı sipariş, hesabı bölüşme ve anlık analiz çözümleriyle misafir deneyimini yeniden tanımlayın.",
+      "subtext_en": "Redefine guest experience with NFC & AI-powered contactless menus, intelligent ordering, split payments, and real-time analytics.",
+      "cta_primary_tr": "Hizmetlerimizi Keşfedin",
+      "cta_primary_en": "Discover Services",
+      "cta_secondary_tr": "Bize Ulaşın",
+      "cta_secondary_en": "Contact Us",
+      "interactive_element": "3D/Interactive Floating NFC Card + Phone Menu Simulator with glowing pulse rings"
+    },
+    {
+      "id": "services",
+      "name": "Services Grid (4 Core Services)",
+      "layout": "Grid 2x2 with tetris border accents and high-contrast dark card surfaces",
+      "services_list": [
+        {
+          "id": "nfc_menu_order_pay",
+          "title_tr": "NFC Menü, Sipariş & Bölünmüş Ödeme",
+          "title_en": "NFC Menu, Order & Split Payment",
+          "desc_tr": "Masaya dokunarak saniyeler içinde menüyü açın, sipariş verin ve hesabı arkadaşlarınızla dilediğiniz gibi bölün.",
+          "desc_en": "Tap the table to open menu instantly, order, and split the bill seamlessly with your group.",
+          "badge": "NFC + WebApp"
+        },
+        {
+          "id": "nfc_google_reviews",
+          "title_tr": "NFC Google Yorum & İstatistik Sistemi",
+          "title_en": "NFC Google Reviews & Scan Stats",
+          "desc_tr": "Tek dokunuşla Google yorumlarını katlayın, masalardan gelen tarama istatistiklerini canlı takip edin.",
+          "desc_en": "Boost Google reviews with 1-tap NFC, track live scan rates and engagement per table.",
+          "badge": "Growth Engine"
+        },
+        {
+          "id": "analytics_panel",
+          "title_tr": "Gerçek Zamanlı Analiz Paneli",
+          "title_en": "Real-Time Analytics Dashboard",
+          "desc_tr": "En çok tercih edilen lezzetler, masa dönüşüm süreleri ve garson verimliliğini anlık verilerle optimize edin.",
+          "desc_en": "Optimize top-selling items, table turnaround time, and staff efficiency via live telemetry.",
+          "badge": "Intelligence"
+        },
+        {
+          "id": "ai_food_assistant",
+          "title_tr": "Yapay Zeka Lezzet Asistanı",
+          "title_en": "AI Culinary Assistant",
+          "desc_tr": "Misafirlerinize özel şarap-yemek eşleşmesi ve alerjen duyarlılığı sunan kişiselleştirilmiş AI garsonu.",
+          "desc_en": "Personalized AI sommelier and dish advisor guiding guests based on dietary preferences and pairings.",
+          "badge": "AI Powered"
+        }
+      ]
+    },
+    {
+      "id": "technology_showcase",
+      "name": "Interactive Mockups (Phone Menu & Analytics Panel)",
+      "disclaimer": "All metrics in mockups carry visible yellow 'DEMO DATA / DEMO VERİ' tags to strictly avoid fake statistics.",
+      "phone_mockup": {
+        "title_tr": "NFC Mobil Menü & Bölünmüş Ödeme Görünümü",
+        "title_en": "NFC Mobile Menu & Split-Pay Preview",
+        "interactive_tabs": ["Menü", "Sipariş", "Hesap Böl"],
+        "demo_tag": "DEMO VERİ / DEMO DATA"
+      },
+      "dashboard_mockup": {
+        "title_tr": "Canlı Restoran Yönetim & Analiz Ekranı",
+        "title_en": "Live Restaurant Management & Analytics Panel",
+        "metrics": [
+          {"label": "Saatlik Tarama", "value": "142 Taps", "tag": "DEMO DATA"},
+          {"label": "Ortalama Masa Süresi", "value": "38 dk", "tag": "DEMO DATA"},
+          {"label": "NFC Yorum Dönüşümü", "value": "%34.8", "tag": "DEMO DATA"}
+        ]
+      }
+    },
+    {
+      "id": "contact",
+      "name": "Contact Form",
+      "fields": ["Name / Ad", "Surname / Soyad", "Phone / Telefon", "Email / E-posta"],
+      "button_tr": "Mesaj Gönder",
+      "button_en": "Send Message",
+      "interactive_behavior": "Client-side submit validation with high-end glass confirmation modal and toast notification."
+    },
+    {
+      "id": "footer",
+      "name": "Corporate Footer",
+      "logo": "LACHEN.CO. with NFC arcs",
+      "desc_tr": "Lachen & Co. restoranlar için geliştirdiği NFC ve AI ekosistemi ile dijital dönüşümü lüks ve hızla buluşturur.",
+      "desc_en": "Lachen & Co. merges luxury and speed for modern dining with its proprietary NFC & AI platform.",
+      "email": "info@lachen.co",
+      "copyright": "© 2026 Lachen & Co. Tüm hakları saklıdır."
+    }
+  ],
+  "image_urls": [
+    {
+      "url": "https://images.unsplash.com/photo-1778789752084-3639249582de?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDZ8MHwxfHNlYXJjaHwyfHxkYXJrJTIwbHV4dXJ5JTIwcmVzdGF1cmFudCUyMGRpbmluZyUyMHRlY2glMjBzbWFydHBob25lJTIwTkZDfGVufDB8fHx8MTc5MjA4NzI4NHww&ixlib=rb-4.1.0&q=85",
+      "category": "Hero / Payment Tech",
+      "description": "Customer pointing at terminal in dark luxury restaurant setting"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1703793578040-07e1778b6b2c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MDZ8MHwxfHNlYXJjaHxfHxkYXJrJTIwbHV4dXJ5JTIwcmVzdGF1cmFudCUyMGRpbmluZyUyMHRlY2glMjBzbWFydHBob25lJTIwTkZDfGVufDB8fHx8MTc5MjA4NzI4NHww&ixlib=rb-4.1.0&q=85",
+      "category": "Atmospheric Background",
+      "description": "Dimly lit high-end luxury restaurant interior"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1750943079478-ae516c4133cd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHw0fHxsdXh1cnklMjByZXN0YXVyYW50JTIwZ291cm1ldCUyMGRpc2glMjBkYXJrJTIwYmFja2dyb3VuZHxlbnwwfHx8fDE3OTIwODcyOTF8MA&ixlib=rb-4.1.0&q=85",
+      "category": "Gourmet Dish",
+      "description": "High-end seafood dish with wine on dark background"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1760888549280-4aef010720bd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NjZ8MHwxfHNlYXJjaHwxfHxzbWFydHBob25lJTIwZGlnaXRhbCUyMG1lbnUlMjBvcmRlciUyMHNjYW5uaW5nJTIwY29udGFjdGxlc3N8ZW58MHx8fHwxNzkyMDg3MjkxfDA&ixlib=rb-4.1.0&q=85",
+      "category": "Mobile Menu Showcase",
+      "description": "Hand holding smartphone displaying digital restaurant ordering app"
+    }
+  ],
+  "testing_and_accessibility": {
+    "data_testid_convention": "All interactive elements, buttons, inputs, language toggles, tabs, and form submissions MUST have kebab-case data-testid attributes (e.g., data-testid='language-toggle-tr', data-testid='hero-cta-discover', data-testid='contact-submit-btn').",
+    "apca_contrast": "Ensure white text over #050505 background achieves >90 Lc APCA readability score.",
+    "keyboard_nav": "Full outline focus rings on interactive elements with ring-white/50."
+  },
+  "instructions_to_main_agent": [
+    "Build the complete dark minimal Awwwards-caliber landing application for Lachen & Co.",
+    "Strictly adhere to the brand logo format: LACHEN.CO. with 3 animated SVG radio wave arcs after the trailing dot.",
+    "Implement language state management (TR and EN) with persistent state or React state context.",
+    "Ensure all metric mockups have clear 'DEMO VERİ / DEMO DATA' badges and zero fake testimonials or artificial company metrics.",
+    "Use testids on all interactive components as specified in testing_and_accessibility."
+  ]
+}
