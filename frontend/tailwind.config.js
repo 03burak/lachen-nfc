@@ -15,7 +15,7 @@ module.exports = {
         sm: 'calc(var(--radius) - 4px)'
       },
       fontFamily: {
-        display: ['Outfit', 'sans-serif'],
+        display: ['Sora', 'sans-serif'],
         sans: ['"Plus Jakarta Sans"', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'monospace'],
       },

@@ -1,16 +1,37 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, Mail } from "lucide-react";
+import { ArrowUpRight, CheckCircle2, Instagram, Mail, MessageCircle, Phone } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import Reveal from "@/components/Reveal";
 
+const ICONS = { mail: Mail, phone: Phone, whatsapp: MessageCircle, instagram: Instagram };
+
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 export const Contact = () => {
   const { t } = useLanguage();
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState("idle");
+  const [form, setForm] = useState({ firstName: "", lastName: "", phone: "", email: "" });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSent(true);
+    setStatus("sending");
+    try {
+      const res = await fetch(`${API_URL}/api/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          first_name: form.firstName,
+          last_name: form.lastName,
+          phone: form.phone,
+          email: form.email,
+        }),
+      });
+      if (!res.ok) throw new Error("send failed");
+      setStatus("sent");
+    } catch {
+      setStatus("error");
+    }
   };
 
   const fields = [
@@ -31,20 +52,41 @@ export const Contact = () => {
           <p data-testid="contact-desc" className="mt-6 max-w-md text-sm leading-relaxed text-zinc-400 sm:text-base">
             {t.contact.desc}
           </p>
-          <a
-            data-testid="contact-email-link"
-            href="mailto:info@lachen.co"
-            className="group mt-10 inline-flex items-center gap-3 text-base font-medium text-white"
-          >
-            <span className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 transition-colors duration-300 group-hover:bg-white group-hover:text-black">
-              <Mail size={17} />
-            </span>
-            info@lachen.co
-          </a>
+
+          <div data-testid="contact-links" className="mt-10 flex max-w-md flex-col">
+            {t.contact.links.map((l) => {
+              const Icon = ICONS[l.icon] || Mail;
+              const external = l.href.startsWith("http");
+              return (
+                <a
+                  key={l.id}
+                  data-testid={`contact-${l.id}-link`}
+                  href={l.href}
+                  target={external ? "_blank" : undefined}
+                  rel={external ? "noopener noreferrer" : undefined}
+                  className="group flex items-center justify-between border-t border-white/10 py-4 last:border-b"
+                >
+                  <div className="flex items-center gap-4">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/15 transition-colors duration-300 group-hover:bg-white group-hover:text-black">
+                      <Icon size={16} />
+                    </span>
+                    <div>
+                      <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500">{l.label}</p>
+                      <p className="text-sm font-medium text-white">{l.value}</p>
+                    </div>
+                  </div>
+                  <ArrowUpRight
+                    size={16}
+                    className="text-zinc-600 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-white"
+                  />
+                </a>
+              );
+            })}
+          </div>
         </Reveal>
 
         <Reveal delay={0.15}>
-          {sent ? (
+          {status === "sent" ? (
             <motion.div
               data-testid="contact-success"
               initial={{ opacity: 0, scale: 0.96 }}
@@ -57,7 +99,10 @@ export const Contact = () => {
               <p className="mt-3 max-w-xs text-sm leading-relaxed text-zinc-400">{t.contact.successDesc}</p>
               <button
                 data-testid="contact-success-reset"
-                onClick={() => setSent(false)}
+                onClick={() => {
+                  setStatus("idle");
+                  setForm({ firstName: "", lastName: "", phone: "", email: "" });
+                }}
                 className="mt-8 rounded-full border border-white/25 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-black"
               >
                 {t.contact.successReset}
@@ -81,6 +126,8 @@ export const Contact = () => {
                       type={f.type}
                       required
                       autoComplete={f.autoComplete}
+                      value={form[f.name]}
+                      onChange={(e) => setForm((prev) => ({ ...prev, [f.name]: e.target.value }))}
                       placeholder={t.contact.placeholders[f.name]}
                       className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-colors focus:border-white/40"
                     />
@@ -91,10 +138,16 @@ export const Contact = () => {
               <button
                 data-testid="contact-submit-btn"
                 type="submit"
-                className="mt-7 w-full rounded-full bg-white py-3.5 text-sm font-semibold text-black transition-transform duration-300 hover:scale-[1.02] active:scale-[0.99]"
+                disabled={status === "sending"}
+                className="mt-7 w-full rounded-full bg-white py-3.5 text-sm font-semibold text-black transition-transform duration-300 hover:scale-[1.02] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {t.contact.submit}
+                {status === "sending" ? t.contact.sending : t.contact.submit}
               </button>
+              {status === "error" && (
+                <p data-testid="contact-form-error" className="mt-4 text-center text-xs leading-relaxed text-red-300">
+                  {t.contact.error}
+                </p>
+              )}
               <p data-testid="contact-note" className="mt-4 text-center font-mono text-[10px] leading-relaxed text-zinc-600">
                 {t.contact.note}
               </p>

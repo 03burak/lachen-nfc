@@ -6,8 +6,10 @@ import Logo from "@/components/Logo";
 export const Footer = () => {
   const { t } = useLanguage();
   const links = [
+    { id: "#hakkimizda", label: t.nav.about, testId: "footer-link-about" },
     { id: "#hizmetler", label: t.nav.services, testId: "footer-link-services" },
     { id: "#teknoloji", label: t.nav.technology, testId: "footer-link-technology" },
+    { id: "#paketler", label: t.nav.packages, testId: "footer-link-packages" },
     { id: "#iletisim", label: t.nav.contact, testId: "footer-link-contact" },
   ];
 
@@ -22,13 +24,13 @@ export const Footer = () => {
             </p>
             <a
               data-testid="footer-email-link"
-              href="mailto:info@lachen.co"
+              href="mailto:lachenebay@gmail.com"
               className="group mt-7 inline-flex items-center gap-3 text-sm font-medium text-white"
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 transition-colors duration-300 group-hover:bg-white group-hover:text-black">
                 <Mail size={15} />
               </span>
-              info@lachen.co
+              lachenebay@gmail.com
             </a>
           </div>
 

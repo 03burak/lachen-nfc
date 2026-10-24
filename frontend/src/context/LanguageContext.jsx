@@ -3,7 +3,10 @@ import { createContext, useContext, useEffect, useState } from "react";
 const translations = {
   tr: {
     meta: { title: "Lachen & Co. | Restoranların Geleceğini Birlikte Tasarlıyoruz" },
-    nav: { services: "Hizmetler", technology: "Teknoloji", contact: "İletişim", cta: "Bize Ulaşın", menuOpen: "Menüyü Aç", menuClose: "Menüyü Kapat" },
+    nav: {
+      about: "Hakkımızda", services: "Hizmetler", technology: "Teknoloji", packages: "Paketler",
+      contact: "İletişim", cta: "Bize Ulaşın", menuOpen: "Menüyü Aç", menuClose: "Menüyü Kapat",
+    },
     hero: {
       eyebrow: "NFC & Yapay Zekâ Restoran Teknolojileri",
       lines: ["Restoranların", "Geleceğini", "Birlikte Tasarlıyoruz."],
@@ -13,6 +16,18 @@ const translations = {
       scroll: "Keşfet",
     },
     marquee: ["NFC Menü", "Temassız Sipariş", "Bölünmüş Ödeme", "Google Yorumları", "Analiz Paneli", "Yapay Zekâ Asistanı"],
+    about: {
+      eyebrow: "Hakkımızda",
+      title: "Restoran dijitalleşmesinde teknoloji ortağınız",
+      p1: "Lachen & Co., restoran ve kafe işletmeleri için temassız teknoloji çözümleri geliştiren kurumsal bir teknoloji şirketidir. NFC ve QR tabanlı menü, sipariş ve ödeme sistemlerimizle misafir deneyimini hızlandırmayı, operasyonel verimliliği artırmayı ve işletmelere veriye dayalı karar alma olanağı sunmayı amaçlıyoruz.",
+      p2: "Masadaki ilk dokunuştan hesabın bölüşülmesine kadar tüm akışı tek bir ekosistemde topluyoruz. Analiz panellerimiz satış, sipariş ve kullanım verilerini anlık olarak görünür kılarken; yapay zekâ asistanımız misafirlerinize yemek önerileri sunar ve sorularını yanıtlar.",
+      pillars: [
+        { title: "Temassız Teknoloji", desc: "NFC ve QR çözümleriyle uygulama indirmeden saniyeler içinde menüye erişim." },
+        { title: "Sipariş & Ödeme", desc: "Masa başında sipariş, bölünmüş ödeme ve hızlı hesap kapatma akışı." },
+        { title: "Misafir Deneyimi", desc: "Google yorumlarına yönlendirme ve yapay zekâ destekli kişiselleştirilmiş servis." },
+      ],
+      imageTag: "Lachen & Co. — Restoran Teknolojileri",
+    },
     services: {
       eyebrow: "Hizmetlerimiz",
       title: "Restoranınız için uçtan uca dijital ekosistem",
@@ -61,6 +76,36 @@ const translations = {
         "Ödeme sonrası tek dokunuşla Google yorumu ekranı gelir.",
       ],
     },
+    packages: {
+      eyebrow: "Paketlerimiz",
+      title: "İşletmenize uygun paketi seçin",
+      desc: "Paket içerikleri ve fiyatlandırma detayları yakında paylaşılacaktır. Aşağıdaki içerikler taslaktır ve kolayca düzenlenebilir.",
+      includesTitle: "Paket İçeriği",
+      cta: "Fiyat İçin Bize Ulaşın",
+      soon: "Detaylar yakında",
+      gold: {
+        name: "Gold Paket",
+        tier: "Premium",
+        desc: "Kapsamlı dijital dönüşüm için tasarlanan premium seviye paket. Detaylı içerik yakında eklenecektir.",
+        items: [
+          "Paket içeriği 1 — düzenlenecek",
+          "Paket içeriği 2 — düzenlenecek",
+          "Paket içeriği 3 — düzenlenecek",
+          "Paket içeriği 4 — düzenlenecek",
+        ],
+      },
+      bronz: {
+        name: "Bronz Paket",
+        tier: "Başlangıç",
+        desc: "Temassız menü ve temel çözümlerle dijitalleşmeye giriş paketi. Detaylı içerik yakında eklenecektir.",
+        items: [
+          "Paket içeriği 1 — düzenlenecek",
+          "Paket içeriği 2 — düzenlenecek",
+          "Paket içeriği 3 — düzenlenecek",
+          "Paket içeriği 4 — düzenlenecek",
+        ],
+      },
+    },
     contact: {
       eyebrow: "Bize Ulaşın",
       title: "Birlikte tasarlayalım.",
@@ -68,14 +113,21 @@ const translations = {
       firstName: "Ad", lastName: "Soyad", phone: "Telefon", email: "E-posta",
       placeholders: { firstName: "Adınız", lastName: "Soyadınız", phone: "+90 5__ ___ __ __", email: "ornek@restoran.com" },
       submit: "Mesaj Gönder",
-      note: "Bu form şu anda tanıtım amaçlıdır; gönderimler e-posta olarak iletilmez.",
+      sending: "Gönderiliyor…",
+      error: "Mesajınız gönderilemedi. Lütfen daha sonra tekrar deneyin veya lachenebay@gmail.com adresine yazın.",
+      note: "Mesajlarınız doğrudan e-posta kutumuza iletilir.",
       successTitle: "Mesajınız alındı",
       successDesc: "Teşekkürler! En kısa sürede size döneceğiz.",
       successReset: "Yeni Mesaj Gönder",
+      links: [
+        { id: "email", label: "E-posta", value: "lachenebay@gmail.com", href: "mailto:lachenebay@gmail.com", icon: "mail" },
+        { id: "phone", label: "Telefon", value: "+90 543 245 33 31", href: "tel:+905432453331", icon: "phone" },
+        { id: "whatsapp", label: "WhatsApp", value: "+90 543 245 33 31", href: "https://wa.me/905432453331", icon: "whatsapp" },
+        { id: "instagram", label: "Instagram", value: "@lachencompany", href: "https://www.instagram.com/lachencompany/", icon: "instagram" },
+      ],
     },
     footer: {
       desc: "Lachen & Co., restoranlar için NFC menü ve ödeme, Google yorum sistemleri, analiz panelleri ve yapay zekâ çözümleri geliştiren teknoloji şirketidir.",
-      contact: "İletişim",
       explore: "Keşfet",
       rights: "Tüm hakları saklıdır.",
       tagline: "NFC & AI — Restoran Teknolojileri",
@@ -83,7 +135,10 @@ const translations = {
   },
   en: {
     meta: { title: "Lachen & Co. | Architecting the Future of Restaurants" },
-    nav: { services: "Services", technology: "Technology", contact: "Contact", cta: "Contact Us", menuOpen: "Open Menu", menuClose: "Close Menu" },
+    nav: {
+      about: "About Us", services: "Services", technology: "Technology", packages: "Packages",
+      contact: "Contact", cta: "Contact Us", menuOpen: "Open Menu", menuClose: "Close Menu",
+    },
     hero: {
       eyebrow: "NFC & AI Restaurant Technologies",
       lines: ["Architecting the", "Future of", "Restaurants."],
@@ -93,6 +148,18 @@ const translations = {
       scroll: "Scroll",
     },
     marquee: ["NFC Menu", "Contactless Ordering", "Split Payment", "Google Reviews", "Analytics Panel", "AI Assistant"],
+    about: {
+      eyebrow: "About Us",
+      title: "Your technology partner in restaurant digitalization",
+      p1: "Lachen & Co. is a corporate technology company developing contactless technology solutions for restaurants and cafés. With our NFC and QR-based menu, ordering, and payment systems, we aim to speed up the guest experience, increase operational efficiency, and give businesses the ability to make data-driven decisions.",
+      p2: "We bring the entire flow — from the first tap at the table to splitting the bill — into a single ecosystem. While our analytics dashboards make sales, order, and usage data visible in real time, our AI assistant offers your guests dish recommendations and answers their questions.",
+      pillars: [
+        { title: "Contactless Technology", desc: "Access the menu in seconds with NFC and QR solutions — no app download required." },
+        { title: "Ordering & Payment", desc: "Table-side ordering, split payment, and a fast bill-closing flow." },
+        { title: "Guest Experience", desc: "Google review redirection and AI-assisted personalized service." },
+      ],
+      imageTag: "Lachen & Co. — Restaurant Technologies",
+    },
     services: {
       eyebrow: "Our Services",
       title: "An end-to-end digital ecosystem for your restaurant",
@@ -141,6 +208,36 @@ const translations = {
         "After payment, the Google review screen appears in one tap.",
       ],
     },
+    packages: {
+      eyebrow: "Our Packages",
+      title: "Choose the package that fits your business",
+      desc: "Package contents and pricing details will be announced soon. The content below is a draft and easy to edit.",
+      includesTitle: "Package Contents",
+      cta: "Contact Us for Pricing",
+      soon: "Details coming soon",
+      gold: {
+        name: "Gold Package",
+        tier: "Premium",
+        desc: "A premium-tier package designed for comprehensive digital transformation. Detailed content coming soon.",
+        items: [
+          "Package content 1 — to be edited",
+          "Package content 2 — to be edited",
+          "Package content 3 — to be edited",
+          "Package content 4 — to be edited",
+        ],
+      },
+      bronz: {
+        name: "Bronze Package",
+        tier: "Starter",
+        desc: "A starter package to begin digitalizing with a contactless menu and core solutions. Detailed content coming soon.",
+        items: [
+          "Package content 1 — to be edited",
+          "Package content 2 — to be edited",
+          "Package content 3 — to be edited",
+          "Package content 4 — to be edited",
+        ],
+      },
+    },
     contact: {
       eyebrow: "Get in Touch",
       title: "Let's design it together.",
@@ -148,14 +245,21 @@ const translations = {
       firstName: "First Name", lastName: "Last Name", phone: "Phone", email: "Email",
       placeholders: { firstName: "Your first name", lastName: "Your last name", phone: "+90 5__ ___ __ __", email: "you@restaurant.com" },
       submit: "Send Message",
-      note: "This form is for presentation purposes only; submissions are not emailed.",
+      sending: "Sending…",
+      error: "Your message could not be sent. Please try again later or write to lachenebay@gmail.com.",
+      note: "Your messages are delivered directly to our inbox.",
       successTitle: "Your message has been received",
       successDesc: "Thank you! We will get back to you shortly.",
       successReset: "Send Another Message",
+      links: [
+        { id: "email", label: "Email", value: "lachenebay@gmail.com", href: "mailto:lachenebay@gmail.com", icon: "mail" },
+        { id: "phone", label: "Phone", value: "+90 543 245 33 31", href: "tel:+905432453331", icon: "phone" },
+        { id: "whatsapp", label: "WhatsApp", value: "+90 543 245 33 31", href: "https://wa.me/905432453331", icon: "whatsapp" },
+        { id: "instagram", label: "Instagram", value: "@lachencompany", href: "https://www.instagram.com/lachencompany/", icon: "instagram" },
+      ],
     },
     footer: {
       desc: "Lachen & Co. is a technology company building NFC menu & payment, Google review, analytics, and AI solutions for restaurants.",
-      contact: "Contact",
       explore: "Explore",
       rights: "All rights reserved.",
       tagline: "NFC & AI — Restaurant Technologies",

@@ -20,8 +20,10 @@ export const Navbar = () => {
   }, []);
 
   const links = [
+    { id: "#hakkimizda", label: t.nav.about, testId: "nav-link-about" },
     { id: "#hizmetler", label: t.nav.services, testId: "nav-link-services" },
     { id: "#teknoloji", label: t.nav.technology, testId: "nav-link-technology" },
+    { id: "#paketler", label: t.nav.packages, testId: "nav-link-packages" },
     { id: "#iletisim", label: t.nav.contact, testId: "nav-link-contact" },
   ];
 
@@ -42,7 +44,7 @@ export const Navbar = () => {
           <Logo className="h-8 w-auto md:h-9" testId="navbar-logo-img" />
         </button>
 
-        <nav className="hidden items-center gap-9 md:flex">
+        <nav className="hidden items-center gap-7 md:flex">
           {links.map((l) => (
             <button
               key={l.id}
