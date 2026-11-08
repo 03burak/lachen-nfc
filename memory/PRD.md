@@ -49,6 +49,9 @@ Lachen & Co. için modern, premium ve kurumsal şirket tanıtım sitesi. Tasarı
 - Footer: açıklama kaldırıldı; sol: logo + Keşfet linkleri, sağ: e-posta (mailto) + Instagram (@lachencompany)
 - Bilinen durum: e-posta gönderimi teknik olarak hazır ve uç çalışıyor; ancak Universal Key bakiyesi yetersiz (402 insufficient_credits) — form ziyaretçiye nazik hata mesajı gösteriyor, kredi eklenince otomatik çalışır
 
+## İterasyon 3.1 (2026-11-08)
+- Hakkımızda slider görselleri 1-3, kullanıcının yüklediği yeni fotoğraflarla değiştirildi (/public/images/slider-1,2,3.png); 4. görsel (AI üretimi NFC teknoloji) korundu; otomatik + manuel geçiş aynen çalışıyor
+
 ## Backlog / P0-P2
 - P1: Formun MongoDB'ye kaydı + admin paneli (kullanıcı istediğinde)
 - P1: Gerçek e-posta gönderimi (Resend playbook)

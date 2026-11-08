@@ -5,9 +5,9 @@ import { useLanguage } from "@/context/LanguageContext";
 import Reveal from "@/components/Reveal";
 
 const SLIDES = [
-  { src: "/images/plexi-scene.png", alt: "Lachen & Co. pleksi NFC/QR masa standı — kafe sahnesi" },
-  { src: "/images/plexi-1.webp", alt: "Lachen & Co. pleksi NFC/QR masa standı" },
-  { src: "/images/plexi-2.webp", alt: "Lachen & Co. pleksi masa standı — detay" },
+  { src: "/images/slider-1.png", alt: "Lachen & Co. pleksi NFC masa standı — şık kafe sahnesi" },
+  { src: "/images/slider-2.png", alt: "Lachen & Co. pleksi NFC masa standı — restoran masası" },
+  { src: "/images/slider-3.png", alt: "Lachen & Co. pleksi NFC masa standı — yakın plan" },
   { src: "/images/nfc-tech.png", alt: "Lachen & Co. NFC restoran teknolojisi" },
 ];
 
