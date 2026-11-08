@@ -1,29 +1,81 @@
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import Reveal from "@/components/Reveal";
 
+const SLIDES = [
+  { src: "/images/plexi-scene.png", alt: "Lachen & Co. pleksi NFC/QR masa standı — kafe sahnesi" },
+  { src: "/images/plexi-1.webp", alt: "Lachen & Co. pleksi NFC/QR masa standı" },
+  { src: "/images/plexi-2.webp", alt: "Lachen & Co. pleksi masa standı — detay" },
+  { src: "/images/nfc-tech.png", alt: "Lachen & Co. NFC restoran teknolojisi" },
+];
+
 export const About = () => {
   const { t } = useLanguage();
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => setIndex((i) => (i + 1) % SLIDES.length), 5000);
+    return () => clearInterval(id);
+  }, []);
+
+  const go = (dir) => setIndex((i) => (i + dir + SLIDES.length) % SLIDES.length);
+
   return (
     <section id="hakkimizda" data-testid="about" className="relative py-24 sm:py-32">
       <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:gap-20">
         <Reveal className="order-2 lg:order-1">
           <div
-            data-testid="about-image-frame"
-            className="relative overflow-hidden rounded-3xl border border-white/10"
+            data-testid="about-slider"
+            className="group relative aspect-[4/3] overflow-hidden rounded-3xl border border-white/10 bg-[#0a0a0c]"
           >
-            <img
-              src="https://images.unsplash.com/photo-1750943079478-ae516c4133cd?crop=entropy&cs=srgb&fm=jpg&q=80"
-              alt={t.about.title}
-              className="h-[320px] w-full object-cover sm:h-[440px]"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/90 via-transparent to-[#050505]/30" />
-            <p
-              data-testid="about-image-tag"
-              className="absolute bottom-5 left-5 rounded-full border border-white/20 bg-black/50 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-200 backdrop-blur-md"
+            <AnimatePresence initial={false}>
+              <motion.img
+                key={SLIDES[index].src}
+                src={SLIDES[index].src}
+                alt={SLIDES[index].alt}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8, ease: "easeInOut" }}
+                className="absolute inset-0 h-full w-full object-cover"
+                draggable={false}
+              />
+            </AnimatePresence>
+
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#050505]/70 via-transparent to-transparent" />
+
+            <button
+              data-testid="about-slider-prev"
+              onClick={() => go(-1)}
+              aria-label="Önceki görsel"
+              className="absolute left-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white opacity-0 backdrop-blur-md transition-opacity duration-300 hover:bg-white hover:text-black group-hover:opacity-100"
             >
-              {t.about.imageTag}
-            </p>
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              data-testid="about-slider-next"
+              onClick={() => go(1)}
+              aria-label="Sonraki görsel"
+              className="absolute right-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white opacity-0 backdrop-blur-md transition-opacity duration-300 hover:bg-white hover:text-black group-hover:opacity-100"
+            >
+              <ChevronRight size={18} />
+            </button>
+
+            <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 gap-2">
+              {SLIDES.map((s, i) => (
+                <button
+                  key={s.src}
+                  data-testid={`about-slider-dot-${i}`}
+                  onClick={() => setIndex(i)}
+                  aria-label={`Görsel ${i + 1}`}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    i === index ? "w-6 bg-white" : "w-1.5 bg-white/40 hover:bg-white/70"
+                  }`}
+                />
+              ))}
+            </div>
           </div>
         </Reveal>
 

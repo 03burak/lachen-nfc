@@ -179,10 +179,17 @@ class ContactMessage(BaseModel):
     last_name: str = Field(min_length=1, max_length=100)
     phone: str = Field(min_length=1, max_length=30)
     email: str = Field(min_length=3, max_length=200)
+    message: str | None = Field(default=None, max_length=2000)
 
 @api_router.post("/contact")
 async def send_contact_message(msg: ContactMessage):
     subject = "Lachen & Co. — Yeni İletişim Formu Mesajı"
+    message_row = ""
+    if msg.message:
+        message_row = (
+            '<p style="margin:12px 0 4px"><strong>Mesaj:</strong></p>'
+            f'<p style="margin:4px 0;white-space:pre-wrap">{escape(msg.message)}</p>'
+        )
     html = (
         '<table role="presentation" width="100%"><tr><td style="padding:24px;'
         'font-family:Arial,sans-serif;color:#111111">'
@@ -191,6 +198,7 @@ async def send_contact_message(msg: ContactMessage):
         f'<p style="margin:4px 0"><strong>Soyad:</strong> {escape(msg.last_name)}</p>'
         f'<p style="margin:4px 0"><strong>Telefon:</strong> {escape(msg.phone)}</p>'
         f'<p style="margin:4px 0"><strong>E-posta:</strong> {escape(msg.email)}</p>'
+        + message_row +
         f'<p style="margin-top:20px;font-size:12px;color:#888888">Bu mesaj {escape(EMAIL_FROM_NAME)} '
         'web sitesindeki iletişim formundan gönderilmiştir. Yanıtlamak için yukarıdaki ziyaretçi '
         'e-posta adresini kullanın.</p>'

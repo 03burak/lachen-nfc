@@ -11,7 +11,7 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 export const Contact = () => {
   const { t } = useLanguage();
   const [status, setStatus] = useState("idle");
-  const [form, setForm] = useState({ firstName: "", lastName: "", phone: "", email: "" });
+  const [form, setForm] = useState({ firstName: "", lastName: "", phone: "", email: "", message: "" });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,6 +25,7 @@ export const Contact = () => {
           last_name: form.lastName,
           phone: form.phone,
           email: form.email,
+          message: form.message,
         }),
       });
       if (!res.ok) throw new Error("send failed");
@@ -101,7 +102,7 @@ export const Contact = () => {
                 data-testid="contact-success-reset"
                 onClick={() => {
                   setStatus("idle");
-                  setForm({ firstName: "", lastName: "", phone: "", email: "" });
+                  setForm({ firstName: "", lastName: "", phone: "", email: "", message: "" });
                 }}
                 className="mt-8 rounded-full border border-white/25 px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-black"
               >
@@ -133,6 +134,21 @@ export const Contact = () => {
                     />
                   </div>
                 ))}
+              </div>
+
+              <div className="mt-5 flex flex-col gap-2">
+                <label htmlFor="message" className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500">
+                  {t.contact.message} · {t.contact.messageOptional}
+                </label>
+                <textarea
+                  id="message"
+                  data-testid="contact-input-message"
+                  rows={4}
+                  value={form.message}
+                  onChange={(e) => setForm((prev) => ({ ...prev, message: e.target.value }))}
+                  placeholder={t.contact.placeholders.message}
+                  className="resize-none rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white placeholder-zinc-600 outline-none transition-colors focus:border-white/40"
+                />
               </div>
 
               <button
