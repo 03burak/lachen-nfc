@@ -1,4 +1,5 @@
 import { Component, useEffect } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Lenis from "lenis";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { setLenis } from "@/lib/lenis";
@@ -12,6 +13,8 @@ import Technology from "@/components/Technology";
 import Packages from "@/components/Packages";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
+import AdminLogin from "@/admin/AdminLogin";
+import AdminPanel from "@/admin/AdminPanel";
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -33,7 +36,7 @@ class ErrorBoundary extends Component {
   }
 }
 
-function App() {
+function Site() {
   useEffect(() => {
     const lenis = new Lenis({ duration: 1.15, smoothWheel: true });
     setLenis(lenis);
@@ -51,23 +54,35 @@ function App() {
   }, []);
 
   return (
+    <LanguageProvider>
+      <div className="grain min-h-screen bg-[#050505] text-white selection:bg-white selection:text-black">
+        <Navbar />
+        <main>
+          <Hero />
+          <Marquee />
+          <About />
+          <Services />
+          <Industries />
+          <Technology />
+          <Packages />
+          <Contact />
+        </main>
+        <Footer />
+      </div>
+    </LanguageProvider>
+  );
+}
+
+function App() {
+  return (
     <ErrorBoundary>
-      <LanguageProvider>
-        <div className="grain min-h-screen bg-[#050505] text-white selection:bg-white selection:text-black">
-          <Navbar />
-          <main>
-            <Hero />
-            <Marquee />
-            <About />
-            <Services />
-            <Industries />
-            <Technology />
-            <Packages />
-            <Contact />
-          </main>
-          <Footer />
-        </div>
-      </LanguageProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Site />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminPanel />} />
+        </Routes>
+      </BrowserRouter>
     </ErrorBoundary>
   );
 }

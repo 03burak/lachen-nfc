@@ -52,6 +52,15 @@ Lachen & Co. için modern, premium ve kurumsal şirket tanıtım sitesi. Tasarı
 ## İterasyon 3.1 (2026-11-08)
 - Hakkımızda slider görselleri 1-3, kullanıcının yüklediği yeni fotoğraflarla değiştirildi (/public/images/slider-1,2,3.png); 4. görsel (AI üretimi NFC teknoloji) korundu; otomatik + manuel geçiş aynen çalışıyor
 
+## İterasyon 4 — Yönetim Paneli (2026-11-08)
+- /admin/login + /admin paneli: JWT (httpOnly cookie, 24s access + 7g refresh), brute-force koruması, admin env'den tohumlanıyor (yoksa oluşturur, varsa dokunmaz) — admin@lachen.co / Lachen2026!Admin
+- MongoDB `site_content`: tüm içerik (TR+EN) — hero, marquee, hakkımızda + slider, hizmetler, işletmeler, teknoloji, paketler (+fiyat alanı), iletişim linkleri, footer. Seed: /app/scripts/seed_content.py (sadece boşken)
+- /api/content (public), PUT /api/admin/content, revizyonlar (son 20, her kayıtta eski sürüm saklanır, panelden geri yükleme)
+- Görsel yükleme: Emergent object storage → POST /api/admin/upload → kalıcı /api/files/{path}; slider panelde yükle/sil/sırala
+- Frontend: LanguageContext içeriği önce API'den çeker, yoksa src/data/defaults.js'e düşer (site hiç boş görünmez); Router: `/` site, `/admin` panel — site görünümü korundu
+- Doğrulandı: login/me/wrong-pw, save + anında siteye yansıma (eyebrow testi), restore, upload (kalıcı URL), yetkisiz upload 401, panel + site mobil görünüm
+- Yedek: /app/backups/backup-pre-admin-*.tar.gz (tam proje)
+
 ## Backlog / P0-P2
 - P1: Formun MongoDB'ye kaydı + admin paneli (kullanıcı istediğinde)
 - P1: Gerçek e-posta gönderimi (Resend playbook)

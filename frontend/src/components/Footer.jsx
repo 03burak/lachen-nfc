@@ -40,17 +40,17 @@ export const Footer = () => {
             <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-600">{t.footer.contact}</p>
             <a
               data-testid="footer-email-link"
-              href="mailto:lachen.co@outlook.com"
+              href={`mailto:${t.footer.email}`}
               className="group inline-flex items-center gap-3 text-sm font-medium text-white md:flex-row-reverse"
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 transition-colors duration-300 group-hover:bg-white group-hover:text-black">
                 <Mail size={15} />
               </span>
-              lachen.co@outlook.com
+              {t.footer.email}
             </a>
             <a
               data-testid="footer-instagram-link"
-              href="https://www.instagram.com/lachencompany/"
+              href={t.footer.instagramHref}
               target="_blank"
               rel="noopener noreferrer"
               className="group mt-5 inline-flex items-center gap-3 text-sm font-medium text-white md:flex-row-reverse"
@@ -58,7 +58,7 @@ export const Footer = () => {
               <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 transition-colors duration-300 group-hover:bg-white group-hover:text-black">
                 <Instagram size={15} />
               </span>
-              @lachencompany
+              {t.footer.instagram}
             </a>
           </div>
         </div>

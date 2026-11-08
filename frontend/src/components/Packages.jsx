@@ -43,12 +43,12 @@ export const Packages = () => {
                   <div className="mb-6 flex items-start justify-between gap-2">
                     <span
                       data-testid={`package-tier-${p.key}`}
-                      className={`rounded-full border px-3.5 py-1 font-mono text-[10px] uppercase tracking-widest ${TIER_STYLES[p.key]}`}
+                      className={`rounded-full border px-3.5 py-1 font-mono text-[10px] uppercase tracking-widest ${TIER_STYLES[p.key] || "border-white/20 text-zinc-300"}`}
                     >
                       {p.tier}
                     </span>
                     {featured && (
-                      <span className="relative flex h-2.5 w-2.5 mt-1.5 shrink-0">
+                      <span className="relative mt-1.5 flex h-2.5 w-2.5 shrink-0">
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-60" />
                         <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-white" />
                       </span>
@@ -59,6 +59,12 @@ export const Packages = () => {
                   <p data-testid={`package-desc-${p.key}`} className="mt-2.5 text-sm leading-relaxed text-zinc-400">
                     {p.desc}
                   </p>
+
+                  {p.price ? (
+                    <p data-testid={`package-price-${p.key}`} className="mt-4 font-display text-xl font-bold text-white">
+                      {p.price}
+                    </p>
+                  ) : null}
 
                   <p className="mb-3 mt-8 font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500">
                     {t.packages.includesTitle}

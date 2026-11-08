@@ -19,6 +19,11 @@ export const Navbar = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const handleLangToggle = (l) => {
+    setLang(l);
+    setOpen(false);
+  };
+
   const links = [
     { id: "#hakkimizda", label: t.nav.about, testId: "nav-link-about" },
     { id: "#hizmetler", label: t.nav.services, testId: "nav-link-services" },
@@ -119,7 +124,7 @@ export const Navbar = () => {
                     <button
                       key={l}
                       data-testid={`language-toggle-${l}-mobile`}
-                      onClick={() => setLang(l)}
+                      onClick={() => handleLangToggle(l)}
                       className={`rounded-full px-3 py-1 font-mono text-[11px] uppercase tracking-widest ${
                         lang === l ? "bg-white text-black" : "text-zinc-400"
                       }`}

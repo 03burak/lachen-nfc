@@ -1,4 +1,5 @@
-from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi import FastAPI, APIRouter, HTTPException, Request, Response, UploadFile, File, Query, Header
+from fastapi.responses import Response as RawResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -8,13 +9,18 @@ import ipaddress
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from typing import List, Optional
 import uuid
-from datetime import datetime, timezone
+import copy
+from datetime import datetime, timezone, timedelta
 from html import escape
 from html.parser import HTMLParser
 from urllib.parse import urlparse
 import httpx
+import bcrypt
+import jwt
+import asyncio
+import requests
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -68,6 +74,214 @@ async def get_status_checks():
 
     return status_checks
 
+
+# ==================== AUTH ====================
+
+JWT_ALGORITHM = "HS256"
+
+def hash_password(password: str) -> str:
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+def verify_password(plain: str, hashed: str) -> bool:
+    try:
+        return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
+    except Exception:
+        return False
+
+def create_access_token(user_id: str, email: str) -> str:
+    payload = {"sub": user_id, "email": email, "exp": datetime.now(timezone.utc) + timedelta(hours=24), "type": "access"}
+    return jwt.encode(payload, os.environ["JWT_SECRET"], algorithm=JWT_ALGORITHM)
+
+def create_refresh_token(user_id: str) -> str:
+    payload = {"sub": user_id, "exp": datetime.now(timezone.utc) + timedelta(days=7), "type": "refresh"}
+    return jwt.encode(payload, os.environ["JWT_SECRET"], algorithm=JWT_ALGORITHM)
+
+async def get_current_admin(request: Request) -> dict:
+    token = request.cookies.get("access_token")
+    if not token:
+        auth_header = request.headers.get("Authorization", "")
+        if auth_header.startswith("Bearer "):
+            token = auth_header[7:]
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    try:
+        payload = jwt.decode(token, os.environ["JWT_SECRET"], algorithms=[JWT_ALGORITHM])
+        if payload.get("type") != "access":
+            raise HTTPException(status_code=401, detail="Invalid token type")
+        user = await db.users.find_one({"_id": payload["sub"]})
+        if not user or user.get("role") != "admin":
+            raise HTTPException(status_code=401, detail="Not authorized")
+        user.pop("password_hash", None)
+        return user
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+class LoginBody(BaseModel):
+    email: str
+    password: str
+
+@api_router.post("/auth/login")
+async def login(body: LoginBody, request: Request, response: Response):
+    email = body.email.lower().strip()
+    ip = request.client.host if request.client else "unknown"
+    identifier = f"{ip}:{email}"
+    attempts = await db.login_attempts.find_one({"identifier": identifier})
+    if attempts and attempts.get("count", 0) >= 5:
+        locked_until = attempts.get("locked_until")
+        if locked_until and datetime.now(timezone.utc) < locked_until.replace(tzinfo=timezone.utc):
+            raise HTTPException(status_code=429, detail="Too many attempts. Try again in 15 minutes.")
+
+    user = await db.users.find_one({"email": email})
+    if not user or not verify_password(body.password, user["password_hash"]):
+        await db.login_attempts.update_one(
+            {"identifier": identifier},
+            {"$inc": {"count": 1}, "$set": {"locked_until": datetime.now(timezone.utc) + timedelta(minutes=15)}},
+            upsert=True,
+        )
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    await db.login_attempts.delete_one({"identifier": identifier})
+    access = create_access_token(user["_id"], email)
+    refresh = create_refresh_token(user["_id"])
+    response.set_cookie(key="access_token", value=access, httponly=True, secure=True, samesite="none", max_age=86400, path="/")
+    response.set_cookie(key="refresh_token", value=refresh, httponly=True, secure=True, samesite="none", max_age=604800, path="/")
+    return {"email": email, "role": user.get("role", "admin")}
+
+@api_router.get("/auth/me")
+async def auth_me(request: Request):
+    user = await get_current_admin(request)
+    return {"email": user["email"], "role": user.get("role", "admin")}
+
+@api_router.post("/auth/logout")
+async def logout(response: Response):
+    response.delete_cookie("access_token", path="/")
+    response.delete_cookie("refresh_token", path="/")
+    return {"status": "ok"}
+
+# ==================== CONTENT ====================
+
+@api_router.get("/content")
+async def get_content():
+    doc = await db.site_content.find_one({"_id": "site_content"})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Content not initialized")
+    doc.pop("_id", None)
+    return doc
+
+@api_router.put("/admin/content")
+async def update_content(request: Request):
+    user = await get_current_admin(request)
+    new_data = await request.json()
+    new_data = {k: v for k, v in new_data.items() if k != "_id"}
+    old = await db.site_content.find_one({"_id": "site_content"}, {"_id": 0})
+    if old:
+        await db.content_revisions.insert_one({
+            "rev_id": str(uuid.uuid4()),
+            "saved_at": datetime.now(timezone.utc).isoformat(),
+            "saved_by": user["email"],
+            "data": old,
+        })
+        revs = await db.content_revisions.find({}, {"_id": 1}).sort("saved_at", -1).to_list(1000)
+        if len(revs) > 20:
+            excess = [r["_id"] for r in revs[20:]]
+            await db.content_revisions.delete_many({"_id": {"$in": excess}})
+    await db.site_content.replace_one({"_id": "site_content"}, {**new_data, "_id": "site_content"}, upsert=True)
+    return {"status": "ok"}
+
+@api_router.get("/admin/revisions")
+async def list_revisions(request: Request):
+    await get_current_admin(request)
+    revs = await db.content_revisions.find({}, {"_id": 0, "data": 0}).sort("saved_at", -1).to_list(20)
+    return {"revisions": revs}
+
+@api_router.post("/admin/restore/{rev_id}")
+async def restore_revision(rev_id: str, request: Request):
+    user = await get_current_admin(request)
+    rev = await db.content_revisions.find_one({"rev_id": rev_id})
+    if not rev:
+        raise HTTPException(status_code=404, detail="Revision not found")
+    old = await db.site_content.find_one({"_id": "site_content"}, {"_id": 0})
+    if old:
+        await db.content_revisions.insert_one({
+            "rev_id": str(uuid.uuid4()),
+            "saved_at": datetime.now(timezone.utc).isoformat(),
+            "saved_by": user["email"],
+            "data": old,
+        })
+    data = copy.deepcopy(rev["data"])
+    data["_id"] = "site_content"
+    await db.site_content.replace_one({"_id": "site_content"}, data, upsert=True)
+    return {"status": "ok"}
+
+# ==================== OBJECT STORAGE ====================
+
+STORAGE_BASE = (os.environ.get("INTEGRATION_PROXY_URL") or "").strip() or "https://integrations.emergentagent.com"
+STORAGE_URL = STORAGE_BASE.rstrip("/") + "/objstore/api/v1/storage"
+APP_NAME = "lachenco"
+_storage_key = None
+
+def init_storage(force: bool = False):
+    global _storage_key
+    if _storage_key and not force:
+        return _storage_key
+    resp = requests.post(f"{STORAGE_URL}/init", json={"emergent_key": os.environ.get("EMERGENT_LLM_KEY")}, timeout=30)
+    resp.raise_for_status()
+    _storage_key = resp.json()["storage_key"]
+    return _storage_key
+
+def put_object(path: str, data: bytes, content_type: str) -> dict:
+    key = init_storage()
+    resp = requests.put(
+        f"{STORAGE_URL}/objects/{path}",
+        headers={"X-Storage-Key": key, "Content-Type": content_type},
+        data=data, timeout=120,
+    )
+    resp.raise_for_status()
+    return resp.json()
+
+def get_object(path: str):
+    key = init_storage()
+    resp = requests.get(f"{STORAGE_URL}/objects/{path}", headers={"X-Storage-Key": key}, timeout=60)
+    resp.raise_for_status()
+    return resp.content, resp.headers.get("Content-Type", "application/octet-stream")
+
+ALLOWED_MIME = {"image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml"}
+
+@api_router.post("/admin/upload")
+async def admin_upload(request: Request, file: UploadFile = File(...)):
+    user = await get_current_admin(request)
+    if file.content_type not in ALLOWED_MIME:
+        raise HTTPException(status_code=400, detail="Only image files are allowed")
+    data = await file.read()
+    if len(data) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File too large (max 10MB)")
+    ext = file.filename.split(".")[-1].lower() if "." in file.filename else "bin"
+    path = f"{APP_NAME}/uploads/{uuid.uuid4()}.{ext}"
+    result = await asyncio.to_thread(put_object, path, data, file.content_type)
+    await db.files.insert_one({
+        "id": str(uuid.uuid4()),
+        "storage_path": result["path"],
+        "original_filename": file.filename,
+        "content_type": file.content_type,
+        "size": result["size"],
+        "is_deleted": False,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "uploaded_by": user["email"],
+    })
+    return {"url": f"/api/files/{result['path']}", "path": result["path"]}
+
+@api_router.get("/files/{path:path}")
+async def download_file(path: str):
+    record = await db.files.find_one({"storage_path": path, "is_deleted": False})
+    if not record:
+        raise HTTPException(status_code=404, detail="File not found")
+    data, content_type = await asyncio.to_thread(get_object, path)
+    return RawResponse(content=data, media_type=record.get("content_type", content_type))
+
+
+# ==================== CONTACT (existing) ====================
 
 # Emergent managed email proxy. CONSTANT — never read from os.environ.
 EMAIL_BASE_URL = "https://integrations.emergentagent.com"
@@ -224,6 +438,31 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+
+async def seed_admin():
+    email = os.environ.get("ADMIN_EMAIL", "admin@example.com").lower()
+    existing = await db.users.find_one({"email": email})
+    if existing is None:
+        await db.users.insert_one({
+            "_id": str(uuid.uuid4()),
+            "email": email,
+            "password_hash": hash_password(os.environ.get("ADMIN_PASSWORD", "admin123")),
+            "role": "admin",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        })
+        logger.info(f"Admin seeded: {email}")
+
+@app.on_event("startup")
+async def startup():
+    await db.users.create_index("email", unique=True)
+    await db.login_attempts.create_index("identifier")
+    await seed_admin()
+    try:
+        init_storage()
+        logger.info("Object storage initialized")
+    except Exception as e:
+        logger.error(f"Storage init failed: {e}")
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

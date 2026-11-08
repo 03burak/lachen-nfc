@@ -6,8 +6,8 @@ export const Marquee = () => {
 
   const Sequence = ({ hidden }) => (
     <div aria-hidden={hidden || undefined} className="flex shrink-0 items-center">
-      {items.map((item) => (
-        <span key={item} className="flex items-center">
+      {items.map((item, idx) => (
+        <span key={item + idx} className="flex items-center">
           <span className="whitespace-nowrap px-8 font-mono text-sm uppercase tracking-[0.3em] text-zinc-400 sm:text-base">
             {item}
           </span>

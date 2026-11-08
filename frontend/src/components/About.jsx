@@ -4,23 +4,22 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import Reveal from "@/components/Reveal";
 
-const SLIDES = [
-  { src: "/images/slider-1.png", alt: "Lachen & Co. pleksi NFC masa standı — şık kafe sahnesi" },
-  { src: "/images/slider-2.png", alt: "Lachen & Co. pleksi NFC masa standı — restoran masası" },
-  { src: "/images/slider-3.png", alt: "Lachen & Co. pleksi NFC masa standı — yakın plan" },
-  { src: "/images/nfc-tech.png", alt: "Lachen & Co. NFC restoran teknolojisi" },
-];
-
 export const About = () => {
   const { t } = useLanguage();
+  const slides = t.about.slider || [];
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    const id = setInterval(() => setIndex((i) => (i + 1) % SLIDES.length), 5000);
+    if (slides.length < 2) return undefined;
+    const id = setInterval(() => setIndex((i) => (i + 1) % slides.length), 5000);
     return () => clearInterval(id);
-  }, []);
+  }, [slides.length]);
 
-  const go = (dir) => setIndex((i) => (i + dir + SLIDES.length) % SLIDES.length);
+  useEffect(() => {
+    if (index >= slides.length) setIndex(0);
+  }, [slides.length, index]);
+
+  const go = (dir) => setIndex((i) => (i + dir + slides.length) % slides.length);
 
   return (
     <section id="hakkimizda" data-testid="about" className="relative py-24 sm:py-32">
@@ -31,51 +30,57 @@ export const About = () => {
             className="group relative aspect-[4/3] overflow-hidden rounded-3xl border border-white/10 bg-[#0a0a0c]"
           >
             <AnimatePresence initial={false}>
-              <motion.img
-                key={SLIDES[index].src}
-                src={SLIDES[index].src}
-                alt={SLIDES[index].alt}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.8, ease: "easeInOut" }}
-                className="absolute inset-0 h-full w-full object-cover"
-                draggable={false}
-              />
+              {slides.length > 0 && (
+                <motion.img
+                  key={slides[index].src}
+                  src={slides[index].src}
+                  alt={slides[index].alt}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.8, ease: "easeInOut" }}
+                  className="absolute inset-0 h-full w-full object-cover"
+                  draggable={false}
+                />
+              )}
             </AnimatePresence>
 
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#050505]/70 via-transparent to-transparent" />
 
-            <button
-              data-testid="about-slider-prev"
-              onClick={() => go(-1)}
-              aria-label="Önceki görsel"
-              className="absolute left-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white opacity-0 backdrop-blur-md transition-opacity duration-300 hover:bg-white hover:text-black group-hover:opacity-100"
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              data-testid="about-slider-next"
-              onClick={() => go(1)}
-              aria-label="Sonraki görsel"
-              className="absolute right-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white opacity-0 backdrop-blur-md transition-opacity duration-300 hover:bg-white hover:text-black group-hover:opacity-100"
-            >
-              <ChevronRight size={18} />
-            </button>
-
-            <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 gap-2">
-              {SLIDES.map((s, i) => (
+            {slides.length > 1 && (
+              <>
                 <button
-                  key={s.src}
-                  data-testid={`about-slider-dot-${i}`}
-                  onClick={() => setIndex(i)}
-                  aria-label={`Görsel ${i + 1}`}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    i === index ? "w-6 bg-white" : "w-1.5 bg-white/40 hover:bg-white/70"
-                  }`}
-                />
-              ))}
-            </div>
+                  data-testid="about-slider-prev"
+                  onClick={() => go(-1)}
+                  aria-label="Önceki görsel"
+                  className="absolute left-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white opacity-0 backdrop-blur-md transition-opacity duration-300 hover:bg-white hover:text-black group-hover:opacity-100"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                <button
+                  data-testid="about-slider-next"
+                  onClick={() => go(1)}
+                  aria-label="Sonraki görsel"
+                  className="absolute right-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white opacity-0 backdrop-blur-md transition-opacity duration-300 hover:bg-white hover:text-black group-hover:opacity-100"
+                >
+                  <ChevronRight size={18} />
+                </button>
+
+                <div className="absolute bottom-5 left-1/2 flex -translate-x-1/2 gap-2">
+                  {slides.map((s, i) => (
+                    <button
+                      key={s.src + i}
+                      data-testid={`about-slider-dot-${i}`}
+                      onClick={() => setIndex(i)}
+                      aria-label={`Görsel ${i + 1}`}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${
+                        i === index ? "w-6 bg-white" : "w-1.5 bg-white/40 hover:bg-white/70"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </Reveal>
 
