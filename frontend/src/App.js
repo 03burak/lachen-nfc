@@ -11,6 +11,7 @@ import Services from "@/components/Services";
 import Industries from "@/components/Industries";
 import Technology from "@/components/Technology";
 import Packages from "@/components/Packages";
+import References from "@/components/References";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import AdminLogin from "@/admin/AdminLogin";
@@ -65,6 +66,7 @@ function Site() {
           <Industries />
           <Technology />
           <Packages />
+          <References />
           <Contact />
         </main>
         <Footer />

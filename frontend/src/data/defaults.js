@@ -157,6 +157,23 @@ export const DEFAULT_CONTENT = {
       { id: "instagram", label: { tr: "Instagram", en: "Instagram" }, value: "@lachencompany", href: "https://www.instagram.com/lachencompany/", icon: "instagram" },
     ],
   },
+  references: {
+    enabled: true,
+    eyebrow: { tr: "Referanslarımız", en: "Our References" },
+    title: { tr: "Bize güvenen işletmeler", en: "Businesses that trust us" },
+    items: [
+      { id: "ref-anadolu", name: "Anadolu Restoran", logo: "/images/refs/anadolu-restoran.svg", active: true },
+      { id: "ref-meridyen", name: "Meridyen Kafe", logo: "/images/refs/meridyen-kafe.svg", active: true },
+      { id: "ref-nova", name: "Nova Bistro", logo: "/images/refs/nova-bistro.svg", active: true },
+      { id: "ref-pera", name: "Pera Lokantası", logo: "/images/refs/pera-lokantasi.svg", active: true },
+      { id: "ref-atlas", name: "Atlas Coffee", logo: "/images/refs/atlas-coffee.svg", active: true },
+      { id: "ref-vega", name: "Vega Restoran", logo: "/images/refs/vega-restoran.svg", active: true },
+      { id: "ref-luna", name: "Luna Bistro", logo: "/images/refs/luna-bistro.svg", active: true },
+      { id: "ref-kuzey", name: "Kuzey Kafe", logo: "/images/refs/kuzey-kafe.svg", active: true },
+      { id: "ref-orion", name: "Orion Steakhouse", logo: "/images/refs/orion-steakhouse.svg", active: true },
+      { id: "ref-marmara", name: "Marmara Lezzet", logo: "/images/refs/marmara-lezzet.svg", active: true },
+    ],
+  },
   footer: {
     contact: { tr: "İletişim", en: "Contact" },
     explore: { tr: "Keşfet", en: "Explore" },
@@ -165,5 +182,6 @@ export const DEFAULT_CONTENT = {
     email: "lachen.co@outlook.com",
     instagram: "@lachencompany",
     instagramHref: "https://www.instagram.com/lachencompany/",
+    linkedinHref: "https://tr.linkedin.com/company/lachencompany",
   },
 };

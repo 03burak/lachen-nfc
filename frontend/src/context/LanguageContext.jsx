@@ -135,6 +135,12 @@ function buildT(content, lang) {
       featureTitle: l(c.tech.featureTitle),
       features: c.tech.features[lang] || c.tech.features.tr,
     },
+    references: {
+      enabled: c.references ? !!c.references.enabled : false,
+      eyebrow: c.references ? l(c.references.eyebrow) : "",
+      title: c.references ? l(c.references.title) : "",
+      items: c.references ? c.references.items || [] : [],
+    },
     packages: {
       eyebrow: l(c.packages.eyebrow),
       title: l(c.packages.title),
@@ -178,6 +184,7 @@ function buildT(content, lang) {
       email: c.footer.email,
       instagram: c.footer.instagram,
       instagramHref: c.footer.instagramHref,
+      linkedinHref: c.footer.linkedinHref || "",
     },
   };
 }

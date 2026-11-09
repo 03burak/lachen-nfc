@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { adminLogout, adminMe, fetchContent, fetchRevisions, restoreRevision, saveContent } from "@/admin/api";
 import { LangInput, ListEditor, Section, SingleInput } from "@/admin/fields";
 import SliderEditor from "@/admin/SliderEditor";
+import ReferencesEditor from "@/admin/ReferencesEditor";
 import Logo from "@/components/Logo";
 
 const TABS = [
@@ -11,6 +12,7 @@ const TABS = [
   { id: "services", label: "Hizmetler & İşletmeler" },
   { id: "tech", label: "Teknoloji" },
   { id: "packages", label: "Paketler" },
+  { id: "references", label: "Referanslar" },
   { id: "contact", label: "İletişim" },
   { id: "footer", label: "Footer" },
   { id: "history", label: "Sürüm Geçmişi" },
@@ -269,6 +271,12 @@ export default function AdminPanel() {
           </Section>
         )}
 
+        {tab === "references" && (
+          <Section title="Referanslarımız Yönetimi" testId="admin-section-references">
+            <ReferencesEditor value={c.references} onChange={(v) => set("references", v)} />
+          </Section>
+        )}
+
         {tab === "contact" && (
           <Section title="İletişim Bölümü & Bağlantılar" testId="admin-section-contact">
             <LangInput label="Bölüm Etiketi" value={c.contact.eyebrow} testId="contact-eyebrow" onChange={(v) => set("contact.eyebrow", v)} />
@@ -298,6 +306,7 @@ export default function AdminPanel() {
             <SingleInput label="Footer E-posta" value={c.footer.email} testId="footer-email" onChange={(v) => set("footer.email", v)} />
             <SingleInput label="Footer Instagram (görünen)" value={c.footer.instagram} testId="footer-instagram" onChange={(v) => set("footer.instagram", v)} />
             <SingleInput label="Footer Instagram Bağlantısı" value={c.footer.instagramHref} testId="footer-instagram-href" onChange={(v) => set("footer.instagramHref", v)} />
+            <SingleInput label="Footer LinkedIn Bağlantısı" value={c.footer.linkedinHref} testId="footer-linkedin-href" onChange={(v) => set("footer.linkedinHref", v)} />
           </Section>
         )}
 

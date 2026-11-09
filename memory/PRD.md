@@ -61,6 +61,14 @@ Lachen & Co. için modern, premium ve kurumsal şirket tanıtım sitesi. Tasarı
 - Doğrulandı: login/me/wrong-pw, save + anında siteye yansıma (eyebrow testi), restore, upload (kalıcı URL), yetkisiz upload 401, panel + site mobil görünüm
 - Yedek: /app/backups/backup-pre-admin-*.tar.gz (tam proje)
 
+## İterasyon 5 (2026-11-09)
+- Footer'a LinkedIn bağlantısı eklendi (admin'den düzenlenebilir: footer.linkedinHref)
+- Favicon düzeltildi: NFC motifi ortalı hale getirildi
+- Yeni "Referanslarımız" bölümü (#referanslar): sonsuz akıcı kaydırma (sağdan sola), manuel oklar, yuvarlak logo çerçeveleri + firma isimleri; mobilde oklar altta
+- Admin paneline "Referanslar" sekmesi: firma ekle/sil, isim düzenle, logo yükle (kalıcı storage), firma başına ON/OFF, bölüm geneli ON/OFF
+- Başlangıçta 10 temsili firma (örnek SVG logolar /public/images/refs/) — kullanıcı kendi firmalarıyla değiştirecek; "Bize güvenen işletmeler" başlığı admin'den düzenlenebilir
+- Doğrulandı: desktop+mobil kaydırma, manuel oklar, admin editörü mobilde, LinkedIn footer'da
+
 ## Backlog / P0-P2
 - P1: Formun MongoDB'ye kaydı + admin paneli (kullanıcı istediğinde)
 - P1: Gerçek e-posta gönderimi (Resend playbook)

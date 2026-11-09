@@ -1,4 +1,4 @@
-import { Instagram, Mail } from "lucide-react";
+import { Instagram, Linkedin, Mail } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { scrollToId } from "@/lib/lenis";
 import Logo from "@/components/Logo";
@@ -60,6 +60,20 @@ export const Footer = () => {
               </span>
               {t.footer.instagram}
             </a>
+            {t.footer.linkedinHref && (
+              <a
+                data-testid="footer-linkedin-link"
+                href={t.footer.linkedinHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group mt-5 inline-flex items-center gap-3 text-sm font-medium text-white md:flex-row-reverse"
+              >
+                <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 transition-colors duration-300 group-hover:bg-white group-hover:text-black">
+                  <Linkedin size={15} />
+                </span>
+                LinkedIn
+              </a>
+            )}
           </div>
         </div>
 
