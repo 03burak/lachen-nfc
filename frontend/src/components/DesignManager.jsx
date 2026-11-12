@@ -65,10 +65,17 @@ body { background-color: var(--dm-bg) !important; color: var(--dm-text) !importa
 body, p, li, span, input, textarea, button, a { font-family: ${FONT_MAP[f.body] || FONT_MAP["Plus Jakarta Sans"]}; }
 p, li { line-height: ${lh} !important; }
 .text-zinc-400, .text-zinc-500 { color: var(--dm-text2) !important; }
-.bg-\\[\\#0a0a0c\\], .bg-\\[\\#0a0a0c\\] { background-color: var(--dm-alt-bg) !important; }
+[data-testid^="service-card-"] .text-zinc-400, [data-testid^="service-card-"] .text-zinc-500 { color: inherit; }
+[data-testid^="service-card-"] { transition: background-color 0.5s; }
+[data-testid^="service-card-"]:hover { background-color: ${c.textPrimary || "#FFFFFF"} !important; }
+[data-testid^="service-card-"]:hover h3 { color: ${c.background || "#050505"} !important; }
+[data-testid^="service-card-"]:hover p { color: ${c.background || "#050505"}CC !important; }
+[data-testid^="service-card-"]:hover svg { color: ${c.background || "#050505"} !important; }
+[data-testid^="service-card-"]:hover .font-mono { color: ${c.background || "#050505"}99 !important; }
+[data-testid^="service-card-"]:hover span[class*="rounded-full"] { border-color: ${c.background || "#050505"}33 !important; color: ${c.background || "#050505"}99 !important; }
+.bg-\\[\\#0a0a0c\\] { background-color: var(--dm-alt-bg) !important; }
 [data-testid="hero-cta-discover"], [data-testid="nav-cta"], [data-testid="contact-submit-btn"], [data-testid^="package-cta-"], [data-testid="admin-save-btn"], .dm-btn { background-color: var(--dm-btn-bg) !important; color: var(--dm-btn-text) !important; border-radius: var(--dm-btn-radius) !important; }
 [data-testid="hero-headline"] { font-size: calc(clamp(2.6rem, 8vw, 6.2rem) * ${scale}) !important; }
-[data-testid$="-title"] { }
 h2 { font-size: calc(1em * ${scale}) !important; }
 `;
 
