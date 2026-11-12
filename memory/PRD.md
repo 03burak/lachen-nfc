@@ -74,6 +74,15 @@ Lachen & Co. için modern, premium ve kurumsal şirket tanıtım sitesi. Tasarı
 - Düzeltmeler: footer iletişim linkleri mobilde dikey dizilim (önceden Instagram+LinkedIn yan yanaydı); paket kartları mobilde min-h 480px + sm'de 560px (buton mobilde artık görünür); hero butonları mobilde dokunma hedefi büyütüldü
 - Hamburger menü aç/kapat/navigasyon ve dil değiştirme kapatma davranışı test edildi; masaüstü tasarımı korundu
 
+## İterasyon 7 — Gelişmiş CMS (2026-11-12)
+- Tasarım Ayarları: başlık/metin fontu, kalınlık, boyut, satır/harf aralığı; sayfa/bölüm/buton renkleri, buton köşe yuvarlaklığı; logo/favicon/OG görseli değiştirme (DesignManager ile siteye canlı uygulanır)
+- Bölüm Yönetimi: bölümleri aç/kapat/sırala (ok tuşları), 6 şablon (başlık, banner, görsel+metin, kartlar, istatistik, CTA) ile yeni bölüm ekle/sil; özel bölüm içerikleri "Sayfalar & Özel Bölümler" sekmesinde düzenlenir
+- Reklam Yönetimi: görsel yükle, başlık/açıklama/bağlantı, ON/OFF, başlangıç-bitiş tarihi, sıralama; aktif reklamlar ana sayfada #reklamlar bölümünde görünür
+- Menü & SEO: üst menü bağlantıları ekle/düzenle/sırala/kapat; site başlığı, meta açıklama, Google Analytics ID, Search Console doğrulama (SeoManager ile uygulanır)
+- Özel sayfalar: /sayfa/:slug route'u (CustomPage) — sayfa oluşturma paneli hazır, sayfa içerik editörü temel seviyede
+- Sıralama ok tuşlarıyla (sürükle-bırak yerine — hafif ve stabil); tüm içerik aynı revizyon sistemiyle yedeklenir
+- Doğrulandı: admin sekmeleri, tasarım değişikliği siteye yansıması (altın buton testi geri alındı), özel bölüm + reklam ekleme/görünme/kaldırma, mobil overflow yok
+
 ## Backlog / P0-P2
 - P1: Formun MongoDB'ye kaydı + admin paneli (kullanıcı istediğinde)
 - P1: Gerçek e-posta gönderimi (Resend playbook)

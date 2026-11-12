@@ -18,7 +18,7 @@ export const Toggle = ({ on, onChange, testId }) => (
   </button>
 );
 
-const LogoUploadBtn = ({ onUploaded, testId }) => {
+export const LogoUploadBtn = ({ onUploaded, testId }) => {
   const ref = useRef(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");

@@ -106,6 +106,7 @@ function buildT(content, lang) {
       scroll: l(c.hero.scroll),
     },
     marquee: c.marquee[lang] || c.marquee.tr,
+    menu: (c.menu || []).map((m) => ({ ...m, label: l(m.label) })),
     about: {
       eyebrow: l(c.about.eyebrow),
       title: l(c.about.title),
@@ -189,7 +190,7 @@ function buildT(content, lang) {
   };
 }
 
-export const LanguageProvider = ({ children }) => {
+export const LanguageProvider = ({ children, initialContent = null }) => {
   const [lang, setLang] = useState(() => {
     try {
       return localStorage.getItem("lachen-lang") === "en" ? "en" : "tr";
@@ -197,9 +198,10 @@ export const LanguageProvider = ({ children }) => {
       return "tr";
     }
   });
-  const [content, setContent] = useState(null);
+  const [content, setContent] = useState(initialContent);
 
   useEffect(() => {
+    if (initialContent) return undefined;
     let alive = true;
     fetch(`${API_URL}/api/content`)
       .then((r) => (r.ok ? r.json() : null))
@@ -210,7 +212,7 @@ export const LanguageProvider = ({ children }) => {
     return () => {
       alive = false;
     };
-  }, []);
+  }, [initialContent]);
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -223,7 +225,7 @@ export const LanguageProvider = ({ children }) => {
   const t = buildT(content, lang);
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang, t }}>
+    <LanguageContext.Provider value={{ lang, setLang, t, content }}>
       {children}
     </LanguageContext.Provider>
   );

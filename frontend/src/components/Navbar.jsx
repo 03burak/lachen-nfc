@@ -24,13 +24,22 @@ export const Navbar = () => {
     setOpen(false);
   };
 
-  const links = [
+  const defaultLinks = [
     { id: "#hakkimizda", label: t.nav.about, testId: "nav-link-about" },
     { id: "#hizmetler", label: t.nav.services, testId: "nav-link-services" },
     { id: "#teknoloji", label: t.nav.technology, testId: "nav-link-technology" },
     { id: "#paketler", label: t.nav.packages, testId: "nav-link-packages" },
     { id: "#iletisim", label: t.nav.contact, testId: "nav-link-contact" },
   ];
+  const links = (t.menu && t.menu.length
+    ? t.menu.filter((m) => m.active !== false).map((m) => ({
+        id: m.target,
+        label: m.label,
+        testId: `nav-link-${m.id.replace(/[^a-z0-9]/gi, "-")}`,
+        href: m.type === "link" ? m.target : undefined,
+      }))
+    : defaultLinks
+  );
 
   const handleNav = (id) => {
     setOpen(false);
@@ -50,17 +59,29 @@ export const Navbar = () => {
         </button>
 
         <nav className="hidden items-center gap-7 md:flex">
-          {links.map((l) => (
-            <button
-              key={l.id}
-              data-testid={l.testId}
-              onClick={() => handleNav(l.id)}
-              className="group relative text-sm font-medium text-zinc-300 transition-colors hover:text-white"
-            >
-              {l.label}
-              <span className="absolute -bottom-1 left-0 h-px w-0 bg-white transition-all duration-300 group-hover:w-full" />
-            </button>
-          ))}
+          {links.map((l) =>
+            l.href ? (
+              <a
+                key={l.id}
+                data-testid={l.testId}
+                href={l.href}
+                className="group relative text-sm font-medium text-zinc-300 transition-colors hover:text-white"
+              >
+                {l.label}
+                <span className="absolute -bottom-1 left-0 h-px w-0 bg-white transition-all duration-300 group-hover:w-full" />
+              </a>
+            ) : (
+              <button
+                key={l.id}
+                data-testid={l.testId}
+                onClick={() => handleNav(l.id)}
+                className="group relative text-sm font-medium text-zinc-300 transition-colors hover:text-white"
+              >
+                {l.label}
+                <span className="absolute -bottom-1 left-0 h-px w-0 bg-white transition-all duration-300 group-hover:w-full" />
+              </button>
+            )
+          )}
         </nav>
 
         <div className="hidden items-center gap-4 md:flex">
@@ -108,16 +129,28 @@ export const Navbar = () => {
             className="overflow-hidden border-b border-white/10 bg-[#050505]/95 backdrop-blur-xl md:hidden"
           >
             <div className="flex flex-col gap-1 px-5 py-4">
-              {links.map((l) => (
-                <button
-                  key={l.id}
-                  data-testid={`${l.testId}-mobile`}
-                  onClick={() => handleNav(l.id)}
-                  className="rounded-lg px-3 py-3 text-left text-base font-medium text-zinc-200 hover:bg-white/5"
-                >
-                  {l.label}
-                </button>
-              ))}
+              {links.map((l) =>
+                l.href ? (
+                  <a
+                    key={l.id}
+                    data-testid={`${l.testId}-mobile`}
+                    href={l.href}
+                    onClick={() => setOpen(false)}
+                    className="rounded-lg px-3 py-3 text-base font-medium text-zinc-200 hover:bg-white/5"
+                  >
+                    {l.label}
+                  </a>
+                ) : (
+                  <button
+                    key={l.id}
+                    data-testid={`${l.testId}-mobile`}
+                    onClick={() => handleNav(l.id)}
+                    className="rounded-lg px-3 py-3 text-left text-base font-medium text-zinc-200 hover:bg-white/5"
+                  >
+                    {l.label}
+                  </button>
+                )
+              )}
               <div className="mt-2 flex items-center justify-between px-3 pb-2">
                 <div className="flex items-center rounded-full border border-white/15 p-0.5">
                   {["tr", "en"].map((l) => (

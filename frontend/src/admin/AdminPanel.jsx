@@ -4,9 +4,17 @@ import { adminLogout, adminMe, fetchContent, fetchRevisions, restoreRevision, sa
 import { LangInput, ListEditor, Section, SingleInput } from "@/admin/fields";
 import SliderEditor from "@/admin/SliderEditor";
 import ReferencesEditor from "@/admin/ReferencesEditor";
+import DesignSettings from "@/admin/DesignSettings";
+import SectionsManager, { CustomSectionEditor } from "@/admin/SectionsManager";
+import { AdsEditor, MenuEditor, PagesManager } from "@/admin/AdsEditor";
 import Logo from "@/components/Logo";
 
 const TABS = [
+  { id: "design", label: "Tasarım Ayarları" },
+  { id: "sections", label: "Bölümler" },
+  { id: "custom", label: "Sayfalar & Özel Bölümler" },
+  { id: "ads", label: "Reklamlar" },
+  { id: "menu", label: "Menü & SEO" },
   { id: "hero", label: "Ana Sayfa" },
   { id: "about", label: "Hakkımızda & Slider" },
   { id: "services", label: "Hizmetler & İşletmeler" },
@@ -150,6 +158,64 @@ export default function AdminPanel() {
             </button>
           ))}
         </div>
+
+        {tab === "design" && (
+          <Section title="Tasarım Ayarları — font, renk, buton ve görseller" testId="admin-section-design">
+            <DesignSettings value={c.design} onChange={(v) => set("design", v)} />
+          </Section>
+        )}
+
+        {tab === "sections" && (
+          <Section title="Sayfa ve Bölüm Yönetimi" testId="admin-section-sections">
+            <SectionsManager sections={c.sections || []} onChange={(v) => set("sections", v)} />
+          </Section>
+        )}
+
+        {tab === "custom" && (
+          <>
+            <Section title="Özel Sayfalar" testId="admin-section-pages">
+              <PagesManager pages={c.pages || []} onChange={(v) => set("pages", v)} />
+            </Section>
+            <div className="mt-6">
+              <Section title="Özel Bölüm İçerikleri" testId="admin-section-custom">
+                {(c.sections || []).filter((s) => s.type !== "builtin").length === 0 && (
+                  <p className="text-sm text-zinc-500">Henüz özel bölüm yok. "Bölümler" sekmesinden şablon ekleyin.</p>
+                )}
+                <div className="flex flex-col gap-6">
+                  {(c.sections || []).filter((s) => s.type !== "builtin").map((s) => (
+                    <CustomSectionEditor
+                      key={s.id}
+                      section={s}
+                      onChange={(v) => set("sections", (c.sections || []).map((x) => (x.id === s.id ? v : x)))}
+                    />
+                  ))}
+                </div>
+              </Section>
+            </div>
+          </>
+        )}
+
+        {tab === "ads" && (
+          <Section title="Reklam Yönetimi" testId="admin-section-ads">
+            <AdsEditor ads={c.ads || []} onChange={(v) => set("ads", v)} />
+          </Section>
+        )}
+
+        {tab === "menu" && (
+          <>
+            <Section title="Üst Menü Bağlantıları" testId="admin-section-menu">
+              <MenuEditor menu={c.menu || []} onChange={(v) => set("menu", v)} />
+            </Section>
+            <div className="mt-6">
+              <Section title="SEO & Genel Site Ayarları" testId="admin-section-seo">
+                <LangInput label="Site Başlığı (Google'da görünen)" value={c.seo?.title} testId="seo-title" onChange={(v) => set("seo.title", v)} />
+                <LangInput label="Meta Açıklama" value={c.seo?.description} textarea testId="seo-desc" onChange={(v) => set("seo.description", v)} />
+                <SingleInput label="Google Analytics ID (örn. G-XXXXXXX)" value={c.seo?.gaId} testId="seo-ga" onChange={(v) => set("seo.gaId", v)} />
+                <SingleInput label="Google Search Console Doğrulama Kodu" value={c.seo?.gscVerification} testId="seo-gsc" onChange={(v) => set("seo.gscVerification", v)} />
+              </Section>
+            </div>
+          </>
+        )}
 
         {tab === "hero" && (
           <Section title="Ana Sayfa Başlık & Metinler" testId="admin-section-hero">
