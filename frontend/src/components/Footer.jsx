@@ -36,14 +36,14 @@ export const Footer = () => {
             </div>
           </div>
 
-          <div className="md:flex md:flex-col md:items-end md:text-right">
-            <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-600">{t.footer.contact}</p>
+          <div className="flex flex-col gap-5 md:items-end md:text-right">
+            <p className="mb-0 font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-600">{t.footer.contact}</p>
             <a
               data-testid="footer-email-link"
               href={`mailto:${t.footer.email}`}
               className="group inline-flex items-center gap-3 text-sm font-medium text-white md:flex-row-reverse"
             >
-              <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 transition-colors duration-300 group-hover:bg-white group-hover:text-black">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/15 transition-colors duration-300 group-hover:bg-white group-hover:text-black">
                 <Mail size={15} />
               </span>
               {t.footer.email}
@@ -53,7 +53,7 @@ export const Footer = () => {
               href={t.footer.instagramHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="group mt-5 inline-flex items-center gap-3 text-sm font-medium text-white md:flex-row-reverse"
+              className="group inline-flex items-center gap-3 text-sm font-medium text-white md:flex-row-reverse"
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 transition-colors duration-300 group-hover:bg-white group-hover:text-black">
                 <Instagram size={15} />
@@ -66,9 +66,9 @@ export const Footer = () => {
                 href={t.footer.linkedinHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group mt-5 inline-flex items-center gap-3 text-sm font-medium text-white md:flex-row-reverse"
+                className="group inline-flex items-center gap-3 text-sm font-medium text-white md:flex-row-reverse"
               >
-                <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 transition-colors duration-300 group-hover:bg-white group-hover:text-black">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/15 transition-colors duration-300 group-hover:bg-white group-hover:text-black">
                   <Linkedin size={15} />
                 </span>
                 LinkedIn

@@ -69,6 +69,11 @@ Lachen & Co. için modern, premium ve kurumsal şirket tanıtım sitesi. Tasarı
 - Başlangıçta 10 temsili firma (örnek SVG logolar /public/images/refs/) — kullanıcı kendi firmalarıyla değiştirecek; "Bize güvenen işletmeler" başlığı admin'den düzenlenebilir
 - Doğrulandı: desktop+mobil kaydırma, manuel oklar, admin editörü mobilde, LinkedIn footer'da
 
+## İterasyon 6 — Mobil/tablet responsive kontrol (2026-11-12)
+- 360/375/390/414/768 px taraması: yatay taşma hiçbir genişlikte yok; tüm bölümler (hero, hakkımızda+slider, hizmetler, işletmeler, teknoloji, paketler, referanslar, iletişim, footer) doğrulandı
+- Düzeltmeler: footer iletişim linkleri mobilde dikey dizilim (önceden Instagram+LinkedIn yan yanaydı); paket kartları mobilde min-h 480px + sm'de 560px (buton mobilde artık görünür); hero butonları mobilde dokunma hedefi büyütüldü
+- Hamburger menü aç/kapat/navigasyon ve dil değiştirme kapatma davranışı test edildi; masaüstü tasarımı korundu
+
 ## Backlog / P0-P2
 - P1: Formun MongoDB'ye kaydı + admin paneli (kullanıcı istediğinde)
 - P1: Gerçek e-posta gönderimi (Resend playbook)

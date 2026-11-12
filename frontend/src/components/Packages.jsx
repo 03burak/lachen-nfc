@@ -34,7 +34,7 @@ export const Packages = () => {
               <Reveal key={p.key} delay={0.08 + i * 0.1} className="h-full">
                 <article
                   data-testid={`package-card-${p.key}`}
-                  className={`relative flex h-[560px] flex-col rounded-3xl border p-7 sm:p-8 ${
+                  className={`relative flex min-h-[480px] flex-col rounded-3xl border p-7 sm:h-[560px] sm:min-h-0 sm:p-8 ${
                     featured
                       ? "border-white/40 bg-white/[0.05] shadow-[0_30px_90px_-40px_rgba(255,255,255,0.25)]"
                       : "border-white/10 bg-[#0a0a0c]"

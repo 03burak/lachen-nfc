@@ -126,7 +126,7 @@ export const Hero = () => {
             <button
               data-testid="hero-cta-discover"
               onClick={() => scrollToId("#hizmetler")}
-              className="group inline-flex items-center gap-3 rounded-full bg-white px-7 py-3.5 text-sm font-semibold text-black transition-transform duration-300 hover:scale-[1.04] active:scale-[0.98]"
+              className="group inline-flex items-center gap-3 rounded-full bg-white px-7 py-4 text-sm font-semibold text-black transition-transform duration-300 hover:scale-[1.04] active:scale-[0.98] sm:py-3.5"
             >
               {t.hero.ctaPrimary}
               <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
@@ -134,7 +134,7 @@ export const Hero = () => {
             <button
               data-testid="hero-cta-contact"
               onClick={() => scrollToId("#iletisim")}
-              className="inline-flex items-center gap-3 rounded-full border border-white/25 px-7 py-3.5 text-sm font-semibold text-white transition-colors duration-300 hover:border-white hover:bg-white/5"
+              className="inline-flex items-center gap-3 rounded-full border border-white/25 px-7 py-4 text-sm font-semibold text-white transition-colors duration-300 hover:border-white hover:bg-white/5 sm:py-3.5"
             >
               {t.hero.ctaSecondary}
             </button>
