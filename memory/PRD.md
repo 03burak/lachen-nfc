@@ -89,6 +89,14 @@ Lachen & Co. için modern, premium ve kurumsal şirket tanıtım sitesi. Tasarı
 - Not: Kullanıcının admin paneldeki "Self Servis" paketi ve telefon değişiklikleri bilinçli düzenlemelerdir, korundu
 - Mobil + masaüstü overflow: 0, hero fontu Space Grotesk sabit
 
+## İterasyon 9 (2026-11-16)
+- Paket TR/EN çevirileri düzeltildi (TR listeler panelde düzenlenince EN kaymıştı); EN_MAP ile doğru eşleşme
+- Yeni admin: lachen.co@outlook.com (LachenEB.2026!, must_change_password=False — test sonrası temizlendi)
+- Eski admin@lachen.co veritabanından SİLİNDİ; .env seed'i yeni adrese güncellendi; login_attempts temizlendi
+- Auth: change-password, forgot-password (tek kullanımlık 1sa token, e-posta Emergent Resend — kredi gerekli), reset-password (token tek kullanımlık, eski şifre geçersiz)
+- Frontend: AdminLogin'a forgot/reset görünümleri, /admin/reset-password route, Hesap Ayarları sekmesi (ChangePasswordForm)
+- Doğrulandı: eski giriş reddedildi, yeni giriş başarılı, token tek kullanımlık, restart sonrası eski admin geri gelmedi
+
 ## Backlog / P0-P2
 - P1: Formun MongoDB'ye kaydı + admin paneli (kullanıcı istediğinde)
 - P1: Gerçek e-posta gönderimi (Resend playbook)
