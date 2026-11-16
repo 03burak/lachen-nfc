@@ -87,7 +87,7 @@ const UI = {
 };
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
-const LanguageContext = createContext(null);
+export const LanguageContext = createContext(null);
 
 function buildT(content, lang) {
   const ui = UI[lang];

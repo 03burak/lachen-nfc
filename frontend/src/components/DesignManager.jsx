@@ -77,6 +77,8 @@ p, li { line-height: ${lh} !important; }
 [data-testid="hero-cta-discover"], [data-testid="nav-cta"], [data-testid="contact-submit-btn"], [data-testid^="package-cta-"], [data-testid="admin-save-btn"], .dm-btn { background-color: var(--dm-btn-bg) !important; color: var(--dm-btn-text) !important; border-radius: var(--dm-btn-radius) !important; }
 [data-testid="hero-headline"] { font-size: calc(clamp(2.6rem, 8vw, 6.2rem) * ${scale}) !important; }
 h2 { font-size: calc(1em * ${scale}) !important; }
+.outline-text { -webkit-text-stroke: 2px ${c.textPrimary || "#FFFFFF"}E6 !important; color: transparent !important; }
+@media (max-width: 640px) { .outline-text { -webkit-text-stroke-width: 1.25px !important; } }
 `;
 
     if (seo) {

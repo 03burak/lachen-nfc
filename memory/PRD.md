@@ -83,6 +83,12 @@ Lachen & Co. için modern, premium ve kurumsal şirket tanıtım sitesi. Tasarı
 - Sıralama ok tuşlarıyla (sürükle-bırak yerine — hafif ve stabil); tüm içerik aynı revizyon sistemiyle yedeklenir
 - Doğrulandı: admin sekmeleri, tasarım değişikliği siteye yansıması (altın buton testi geri alındı), özel bölüm + reklam ekleme/görünme/kaldırma, mobil overflow yok
 
+## İterasyon 8 (2026-11-16)
+- Logo bileşeni artık design.images.logo'yu okuyor → admin "Site Logosu" değiştirici gerçekten çalışıyor
+- DesignManager: hero outline satırı rengi ana yazı rengini takip ediyor (font/rengin tekrar bozulması önlendi)
+- Not: Kullanıcının admin paneldeki "Self Servis" paketi ve telefon değişiklikleri bilinçli düzenlemelerdir, korundu
+- Mobil + masaüstü overflow: 0, hero fontu Space Grotesk sabit
+
 ## Backlog / P0-P2
 - P1: Formun MongoDB'ye kaydı + admin paneli (kullanıcı istediğinde)
 - P1: Gerçek e-posta gönderimi (Resend playbook)
