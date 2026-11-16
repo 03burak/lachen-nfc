@@ -25,7 +25,7 @@ import requests
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
+# MongoDB connection (bağımsız sunucuda MONGO_URL ve DB_NAME .env'den gelir)
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
@@ -89,7 +89,8 @@ def verify_password(plain: str, hashed: str) -> bool:
         return False
 
 def create_access_token(user_id: str, email: str) -> str:
-    payload = {"sub": user_id, "email": email, "exp": datetime.now(timezone.utc) + timedelta(hours=24), "type": "access"}
+    now = datetime.now(timezone.utc)
+    payload = {"sub": user_id, "email": email, "exp": now + timedelta(hours=24), "iat": now, "type": "access"}
     return jwt.encode(payload, os.environ["JWT_SECRET"], algorithm=JWT_ALGORITHM)
 
 def create_refresh_token(user_id: str) -> str:
@@ -111,6 +112,15 @@ async def get_current_admin(request: Request) -> dict:
         user = await db.users.find_one({"_id": payload["sub"]})
         if not user or user.get("role") != "admin":
             raise HTTPException(status_code=401, detail="Not authorized")
+        # Şifre değişiminden sonra eski token'ları geçersiz kıl
+        pwd_changed = user.get("password_changed_at")
+        if pwd_changed:
+            if isinstance(pwd_changed, str):
+                pwd_changed = datetime.fromisoformat(pwd_changed)
+            if pwd_changed.tzinfo is None:
+                pwd_changed = pwd_changed.replace(tzinfo=timezone.utc)
+            if payload.get("iat", 0) < pwd_changed.timestamp():
+                raise HTTPException(status_code=401, detail="Session expired, please log in again")
         user.pop("password_hash", None)
         return user
     except jwt.ExpiredSignatureError:
@@ -171,7 +181,7 @@ async def change_password(body: ChangePasswordBody, request: Request, response: 
     full = await db.users.find_one({"_id": user["_id"]})
     if not full or not verify_password(body.current_password, full["password_hash"]):
         raise HTTPException(status_code=400, detail="Mevcut şifre hatalı")
-    await db.users.update_one({"_id": user["_id"]}, {"$set": {"password_hash": hash_password(body.new_password), "must_change_password": False}})
+    await db.users.update_one({"_id": user["_id"]}, {"$set": {"password_hash": hash_password(body.new_password), "must_change_password": False, "password_changed_at": datetime.now(timezone.utc)}})
     return {"status": "ok"}
 
 
@@ -224,7 +234,7 @@ async def reset_password(body: ResetPasswordBody):
         expires = expires.replace(tzinfo=timezone.utc)
     if datetime.now(timezone.utc) > expires:
         raise HTTPException(status_code=400, detail="Bağlantının süresi dolmuş")
-    await db.users.update_one({"email": rec["email"]}, {"$set": {"password_hash": hash_password(body.new_password), "must_change_password": False}})
+    await db.users.update_one({"email": rec["email"]}, {"$set": {"password_hash": hash_password(body.new_password), "must_change_password": False, "password_changed_at": datetime.now(timezone.utc)}})
     await db.password_reset_tokens.update_one({"token": body.token}, {"$set": {"used": True}})
     return {"status": "ok"}
 
@@ -284,25 +294,55 @@ async def restore_revision(rev_id: str, request: Request):
     return {"status": "ok"}
 
 # ==================== OBJECT STORAGE ====================
-
-STORAGE_BASE = (os.environ.get("INTEGRATION_PROXY_URL") or "").strip() or "https://integrations.emergentagent.com"
-STORAGE_URL = STORAGE_BASE.rstrip("/") + "/objstore/api/v1/storage"
+# Provider: "emergent" (default, platform), "local" (own server disk), "s3" (S3-compatible)
+STORAGE_PROVIDER = (os.environ.get("STORAGE_PROVIDER") or "emergent").lower()
+LOCAL_UPLOAD_DIR = os.environ.get("LOCAL_UPLOAD_DIR", str(ROOT_DIR / "uploads"))
 APP_NAME = "lachenco"
 _storage_key = None
+_s3_client = None
 
 def init_storage(force: bool = False):
     global _storage_key
+    if STORAGE_PROVIDER == "local":
+        os.makedirs(LOCAL_UPLOAD_DIR, exist_ok=True)
+        return "local"
+    if STORAGE_PROVIDER == "s3":
+        import boto3
+        global _s3_client
+        if _s3_client is None or force:
+            _s3_client = boto3.client(
+                "s3",
+                endpoint_url=os.environ.get("S3_ENDPOINT_URL") or None,
+                aws_access_key_id=os.environ.get("S3_ACCESS_KEY"),
+                aws_secret_access_key=os.environ.get("S3_SECRET_KEY"),
+                region_name=os.environ.get("S3_REGION", "us-east-1"),
+            )
+        return "s3"
     if _storage_key and not force:
         return _storage_key
-    resp = requests.post(f"{STORAGE_URL}/init", json={"emergent_key": os.environ.get("EMERGENT_LLM_KEY")}, timeout=30)
+    storage_base = (os.environ.get("INTEGRATION_PROXY_URL") or "").strip() or "https://integrations.emergentagent.com"
+    resp = requests.post(f"{storage_base.rstrip('/')}/objstore/api/v1/storage/init",
+                         json={"emergent_key": os.environ.get("EMERGENT_LLM_KEY")}, timeout=30)
     resp.raise_for_status()
     _storage_key = resp.json()["storage_key"]
     return _storage_key
 
 def put_object(path: str, data: bytes, content_type: str) -> dict:
+    if STORAGE_PROVIDER == "local":
+        init_storage()
+        full = os.path.join(LOCAL_UPLOAD_DIR, path)
+        os.makedirs(os.path.dirname(full), exist_ok=True)
+        with open(full, "wb") as f:
+            f.write(data)
+        return {"path": path, "size": len(data)}
+    if STORAGE_PROVIDER == "s3":
+        init_storage()
+        _s3_client.put_object(Bucket=os.environ["S3_BUCKET"], Key=path, Body=data, ContentType=content_type)
+        return {"path": path, "size": len(data)}
     key = init_storage()
+    storage_base = (os.environ.get("INTEGRATION_PROXY_URL") or "").strip() or "https://integrations.emergentagent.com"
     resp = requests.put(
-        f"{STORAGE_URL}/objects/{path}",
+        f"{storage_base.rstrip('/')}/objstore/api/v1/storage/objects/{path}",
         headers={"X-Storage-Key": key, "Content-Type": content_type},
         data=data, timeout=120,
     )
@@ -310,8 +350,18 @@ def put_object(path: str, data: bytes, content_type: str) -> dict:
     return resp.json()
 
 def get_object(path: str):
+    if STORAGE_PROVIDER == "local":
+        full = os.path.join(LOCAL_UPLOAD_DIR, path)
+        with open(full, "rb") as f:
+            return f.read(), "application/octet-stream"
+    if STORAGE_PROVIDER == "s3":
+        init_storage()
+        obj = _s3_client.get_object(Bucket=os.environ["S3_BUCKET"], Key=path)
+        return obj["Body"].read(), obj.get("ContentType", "application/octet-stream")
     key = init_storage()
-    resp = requests.get(f"{STORAGE_URL}/objects/{path}", headers={"X-Storage-Key": key}, timeout=60)
+    storage_base = (os.environ.get("INTEGRATION_PROXY_URL") or "").strip() or "https://integrations.emergentagent.com"
+    resp = requests.get(f"{storage_base.rstrip('/')}/objstore/api/v1/storage/objects/{path}",
+                        headers={"X-Storage-Key": key}, timeout=60)
     resp.raise_for_status()
     return resp.content, resp.headers.get("Content-Type", "application/octet-stream")
 
@@ -351,14 +401,44 @@ async def download_file(path: str):
 
 # ==================== CONTACT (existing) ====================
 
-# Emergent managed email proxy. CONSTANT — never read from os.environ.
+# Email provider: "emergent" (default, platform Resend proxy) or "smtp" (own server)
+EMAIL_PROVIDER = (os.environ.get("EMAIL_PROVIDER") or "emergent").lower()
 EMAIL_BASE_URL = "https://integrations.emergentagent.com"
-EMAIL_KEY = os.environ["EMERGENT_EMAIL_KEY"]
-EMAIL_FROM_NAME = os.environ["EMAIL_FROM_NAME"]
+EMAIL_KEY = os.environ.get("EMERGENT_EMAIL_KEY", "")
+EMAIL_FROM_NAME = os.environ.get("EMAIL_FROM_NAME", "Lachen & Co.")
+EMAIL_FROM_ADDRESS = os.environ.get("EMAIL_FROM_ADDRESS", os.environ.get("CONTACT_EMAIL", ""))
 EMAIL_REPLY_TO = os.environ.get("EMAIL_REPLY_TO")
 CONTACT_EMAIL = os.environ["CONTACT_EMAIL"]
 
 email_logger = logging.getLogger("email")
+
+def _send_email_smtp(*, to: str, subject: str, html: str, reply_to: str | None = None) -> str | None:
+    import smtplib
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+    host = os.environ.get("SMTP_HOST")
+    if not host:
+        email_logger.error("SMTP_HOST not configured")
+        raise HTTPException(status_code=503, detail="Email is temporarily unavailable")
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = subject
+    msg["From"] = f"{EMAIL_FROM_NAME} <{EMAIL_FROM_ADDRESS}>"
+    msg["To"] = to
+    if reply_to or EMAIL_REPLY_TO:
+        msg["Reply-To"] = reply_to or EMAIL_REPLY_TO
+    msg.attach(MIMEText(html, "html", "utf-8"))
+    port = int(os.environ.get("SMTP_PORT", "587"))
+    try:
+        with smtplib.SMTP(host, port, timeout=30) as server:
+            if port == 587:
+                server.starttls()
+            if os.environ.get("SMTP_USER"):
+                server.login(os.environ["SMTP_USER"], os.environ.get("SMTP_PASSWORD", ""))
+            server.sendmail(EMAIL_FROM_ADDRESS, [to], msg.as_string())
+        return "smtp"
+    except Exception as e:
+        email_logger.error(f"SMTP send error: {e}")
+        raise HTTPException(status_code=502, detail="Failed to send email")
 
 _SHORTENERS = ("bit.ly", "tinyurl.com", "t.co", "is.gd", "cutt.ly", "goo.gl", "rebrand.ly")
 _CRED_ASK = ("reply with your password", "reply with the code", "send your password", "cvv",
@@ -426,6 +506,8 @@ def _assert_safe_email(subject: str, html: str) -> None:
 
 async def send_email(*, to: str, subject: str, html: str, reply_to: str | None = None) -> str | None:
     _assert_safe_email(subject, html)
+    if EMAIL_PROVIDER == "smtp":
+        return await asyncio.to_thread(_send_email_smtp, to=to, subject=subject, html=html, reply_to=reply_to)
     payload = {"to": [to], "subject": subject, "html": html,
                "from_name": EMAIL_FROM_NAME}
     if reply_to or EMAIL_REPLY_TO:
@@ -492,10 +574,13 @@ async def send_contact_message(msg: ContactMessage):
 # Include the router in the main app
 app.include_router(api_router)
 
+# CORS: CORS_ORIGINS .env'de virgülle ayrılmış gerçek domainler (örn. https://siteniz.com,https://www.siteniz.com)
+# allow_credentials=True ile wildcard "*" kullanılamaz; boş bırakılırsa FRONTEND_URL kullanılır
+_cors = os.environ.get('CORS_ORIGINS', '').strip() or os.environ.get('FRONTEND_URL', 'http://localhost:3000')
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_origins=[o.strip() for o in _cors.split(',') if o.strip()],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -509,6 +594,7 @@ logger = logging.getLogger(__name__)
 
 
 async def seed_admin():
+    # Yalnızca belirtilen admin yoksa oluştur; mevcut admin'in şifresini asla ezme
     email = os.environ.get("ADMIN_EMAIL", "admin@example.com").lower()
     existing = await db.users.find_one({"email": email})
     if existing is None:
@@ -517,6 +603,7 @@ async def seed_admin():
             "email": email,
             "password_hash": hash_password(os.environ.get("ADMIN_PASSWORD", "admin123")),
             "role": "admin",
+            "must_change_password": True,
             "created_at": datetime.now(timezone.utc).isoformat(),
         })
         logger.info(f"Admin seeded: {email}")
@@ -525,10 +612,11 @@ async def seed_admin():
 async def startup():
     await db.users.create_index("email", unique=True)
     await db.login_attempts.create_index("identifier")
+    await db.password_reset_tokens.create_index("expires_at", expireAfterSeconds=0)
     await seed_admin()
     try:
         init_storage()
-        logger.info("Object storage initialized")
+        logger.info(f"Storage initialized (provider={STORAGE_PROVIDER})")
     except Exception as e:
         logger.error(f"Storage init failed: {e}")
 

@@ -97,6 +97,14 @@ Lachen & Co. için modern, premium ve kurumsal şirket tanıtım sitesi. Tasarı
 - Frontend: AdminLogin'a forgot/reset görünümleri, /admin/reset-password route, Hesap Ayarları sekmesi (ChangePasswordForm)
 - Doğrulandı: eski giriş reddedildi, yeni giriş başarılı, token tek kullanımlık, restart sonrası eski admin geri gelmedi
 
+## İterasyon 10 — Bağımsız hosting hazırlığı (2026-11-17)
+- EMAIL_PROVIDER=emergent|smtp, STORAGE_PROVIDER=emergent|local|s3 — platformda çalışmaya devam, kendi sunucuda SMTP/disk/S3
+- CORS: CORS_ORIGINS .env'den (wildcard yerine gerçek domainler); FRONTEND_URL fallback
+- password_changed_at → şifre değişince eski JWT token'lar geçersiz (doğrulandı)
+- .env.example (backend+frontend), backend/README.md (kurulum, yedekleme, env listesi, taşınabilirlik tablosu)
+- requirements.txt: boto3 zaten vardı; demjson3/motor/bcrypt/PyJWT mevcut
+- Doğrulandı: restart sonrası content/login/me/upload/forgot-password çalışıyor; eski token 401
+
 ## Backlog / P0-P2
 - P1: Formun MongoDB'ye kaydı + admin paneli (kullanıcı istediğinde)
 - P1: Gerçek e-posta gönderimi (Resend playbook)
