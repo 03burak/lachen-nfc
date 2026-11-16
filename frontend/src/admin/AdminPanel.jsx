@@ -7,6 +7,7 @@ import ReferencesEditor from "@/admin/ReferencesEditor";
 import DesignSettings from "@/admin/DesignSettings";
 import SectionsManager, { CustomSectionEditor } from "@/admin/SectionsManager";
 import { AdsEditor, MenuEditor, PagesManager } from "@/admin/AdsEditor";
+import ChangePasswordForm from "@/admin/ChangePasswordForm";
 import Logo from "@/components/Logo";
 
 const TABS = [
@@ -24,6 +25,7 @@ const TABS = [
   { id: "contact", label: "İletişim" },
   { id: "footer", label: "Footer" },
   { id: "history", label: "Sürüm Geçmişi" },
+  { id: "account", label: "Hesap Ayarları" },
 ];
 
 export default function AdminPanel() {
@@ -35,10 +37,13 @@ export default function AdminPanel() {
   const [revisions, setRevisions] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [me, setMe] = useState(null);
+
   useEffect(() => {
     (async () => {
       try {
-        await adminMe();
+        const user = await adminMe();
+        setMe(user);
         const c = await fetchContent();
         setContent(c);
       } catch {
@@ -373,6 +378,17 @@ export default function AdminPanel() {
             <SingleInput label="Footer Instagram (görünen)" value={c.footer.instagram} testId="footer-instagram" onChange={(v) => set("footer.instagram", v)} />
             <SingleInput label="Footer Instagram Bağlantısı" value={c.footer.instagramHref} testId="footer-instagram-href" onChange={(v) => set("footer.instagramHref", v)} />
             <SingleInput label="Footer LinkedIn Bağlantısı" value={c.footer.linkedinHref} testId="footer-linkedin-href" onChange={(v) => set("footer.linkedinHref", v)} />
+          </Section>
+        )}
+
+        {tab === "account" && (
+          <Section title={`Hesap Ayarları — ${me?.email || ""}`} testId="admin-section-account">
+            <p className="text-sm text-zinc-400">Şifrenizi değiştirin. Yeni şifre en az 8 karakter olmalı ve doğrulama için iki kez girilmelidir.</p>
+            <ChangePasswordForm testPrefix="account-pw" />
+            <div className="mt-4 rounded-xl border border-white/10 p-4">
+              <p className="text-sm font-semibold text-white">Şifremi Unuttum</p>
+              <p className="mt-1 text-xs text-zinc-500">Giriş ekranındaki "Şifremi Unuttum" seçeneğiyle e-postanıza tek kullanımlık sıfırlama bağlantısı gönderebilirsiniz.</p>
+            </div>
           </Section>
         )}
 

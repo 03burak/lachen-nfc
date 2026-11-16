@@ -67,3 +67,43 @@ export async function uploadImage(file) {
   }
   return res.json();
 }
+
+export async function changePassword(currentPassword, newPassword) {
+  const res = await fetch(`${API}/auth/change-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(typeof err.detail === "string" ? err.detail : "Şifre değiştirilemedi");
+  }
+  return res.json();
+}
+
+export async function forgotPassword(email) {
+  const res = await fetch(`${API}/auth/forgot-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(typeof err.detail === "string" ? err.detail : "Gönderilemedi");
+  }
+  return res.json();
+}
+
+export async function resetPassword(token, newPassword) {
+  const res = await fetch(`${API}/auth/reset-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token, new_password: newPassword }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(typeof err.detail === "string" ? err.detail : "Sıfırlanamadı");
+  }
+  return res.json();
+}

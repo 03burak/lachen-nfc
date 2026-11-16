@@ -106,6 +106,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LanguageProvider><Site /></LanguageProvider>} />
           <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/reset-password" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/sayfa/:slug" element={<CustomPage />} />
         </Routes>

@@ -160,6 +160,74 @@ async def logout(response: Response):
     response.delete_cookie("refresh_token", path="/")
     return {"status": "ok"}
 
+
+class ChangePasswordBody(BaseModel):
+    current_password: str
+    new_password: str = Field(min_length=8, max_length=200)
+
+@api_router.post("/auth/change-password")
+async def change_password(body: ChangePasswordBody, request: Request, response: Response):
+    user = await get_current_admin(request)
+    full = await db.users.find_one({"_id": user["_id"]})
+    if not full or not verify_password(body.current_password, full["password_hash"]):
+        raise HTTPException(status_code=400, detail="Mevcut şifre hatalı")
+    await db.users.update_one({"_id": user["_id"]}, {"$set": {"password_hash": hash_password(body.new_password), "must_change_password": False}})
+    return {"status": "ok"}
+
+
+class ForgotPasswordBody(BaseModel):
+    email: str
+
+@api_router.post("/auth/forgot-password")
+async def forgot_password(body: ForgotPasswordBody):
+    email = body.email.lower().strip()
+    user = await db.users.find_one({"email": email})
+    if user and user.get("role") == "admin":
+        import secrets
+        token = secrets.token_urlsafe(32)
+        await db.password_reset_tokens.update_many({"email": email, "used": False}, {"$set": {"used": True}})
+        await db.password_reset_tokens.insert_one({
+            "token": token,
+            "email": email,
+            "used": False,
+            "expires_at": datetime.now(timezone.utc) + timedelta(hours=1),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+        })
+        base = (os.environ.get("FRONTEND_URL") or "").rstrip("/") or ""
+        link = f"{base}/admin/reset-password?token={token}"
+        html = (
+            '<table role="presentation" width="100%"><tr><td style="padding:24px;font-family:Arial,sans-serif;color:#111111">'
+            '<h2 style="margin:0 0 16px;font-size:18px">Lachen & Co. — Şifre Sıfırlama</h2>'
+            '<p style="margin:4px 0">Yönetim paneli şifrenizi sıfırlamak için aşağıdaki bağlantıya tıklayın:</p>'
+            f'<p style="margin:16px 0"><a href="{escape(link)}" style="background:#050505;color:#ffffff;padding:12px 24px;border-radius:999px;text-decoration:none;display:inline-block">Şifremi Sıfırla</a></p>'
+            f'<p style="margin:4px 0;font-size:12px;color:#888888">Bağlantı 1 saat geçerlidir ve tek kullanımlıktır. Bu isteği siz yapmadıysanız bu e-postayı yok sayabilirsiniz.</p>'
+            f'<p style="margin:4px 0;font-size:12px;color:#888888;word-break:break-all">{escape(link)}</p>'
+            '</td></tr></table>'
+        )
+        await send_email(to=email, subject="Lachen & Co. — Şifre Sıfırlama Bağlantısı", html=html)
+    return {"status": "ok"}
+
+
+class ResetPasswordBody(BaseModel):
+    token: str
+    new_password: str = Field(min_length=8, max_length=200)
+
+@api_router.post("/auth/reset-password")
+async def reset_password(body: ResetPasswordBody):
+    rec = await db.password_reset_tokens.find_one({"token": body.token, "used": False})
+    if not rec:
+        raise HTTPException(status_code=400, detail="Geçersiz veya kullanılmış bağlantı")
+    expires = rec["expires_at"]
+    if isinstance(expires, str):
+        expires = datetime.fromisoformat(expires)
+    if expires.tzinfo is None:
+        expires = expires.replace(tzinfo=timezone.utc)
+    if datetime.now(timezone.utc) > expires:
+        raise HTTPException(status_code=400, detail="Bağlantının süresi dolmuş")
+    await db.users.update_one({"email": rec["email"]}, {"$set": {"password_hash": hash_password(body.new_password), "must_change_password": False}})
+    await db.password_reset_tokens.update_one({"token": body.token}, {"$set": {"used": True}})
+    return {"status": "ok"}
+
 # ==================== CONTENT ====================
 
 @api_router.get("/content")
